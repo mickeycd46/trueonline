@@ -312,7 +312,7 @@
     display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
   }
   .success .check svg{width:28px;height:28px;}
-  .success h2{font-size:19px;color:var(--navy);margin:0 0 8px;text-align:left;}
+  .success h2{font-size:19px;color:var(--navy);margin:0 0 8px;text-align:center;}
   .success p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 auto 20px;max-width:340px;}
   .success .ref{
     display:inline-block;font-size:12.5px;color:var(--ink-soft);
@@ -368,7 +368,7 @@
   </section>
 
   <!-- ============ PATH CHOICE ============ -->
-  <section class="choice" id="choose">
+  <section class="choice" id="choose" data-role="choice-section">
     <div class="wrap">
       <p class="section-title">เลือกวิธีติดต่อที่สะดวก</p>
       <p class="section-sub">เลือกได้ทั้งให้เจ้าหน้าที่โทรกลับ หรือแชทคุยกับเจ้าหน้าที่ทันที</p>
@@ -549,7 +549,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2>ส่งข้อมูลเรียบร้อย</h2>
-      <p>เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้ กรุณาเปิดรับสายจากหมายเลขของบริษัท</p>
+      <p>เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้</p>
       <div class="ref">เลขที่คำขอ: <span id="ref-no">—</span></div>
       <br>
       <button type="button" class="again" id="new-request">ส่งคำขออีกครั้ง</button>
@@ -586,13 +586,18 @@
     line: document.getElementById('section-line'),
     success: document.getElementById('section-success')
   };
+  var choiceSection = document.getElementById('choose');
 
   function showOnly(key){
     ['callback','line','success'].forEach(function(k){
       sections[k].classList.toggle('open', k === key);
     });
+    // ซ่อนหมวด "เลือกวิธีติดต่อที่สะดวก" เมื่อส่งข้อมูลสำเร็จแล้ว ไม่ให้ลูกค้าเห็นอีก
+    choiceSection.style.display = (key === 'success') ? 'none' : '';
     if(key === 'callback' || key === 'line'){
       sections[key].scrollIntoView({behavior:'smooth', block:'start'});
+    } else if(key === 'success'){
+      sections.success.scrollIntoView({behavior:'smooth', block:'start'});
     }
   }
 
@@ -602,7 +607,8 @@
     btn.addEventListener('click', function(){
       sections.callback.classList.remove('open');
       sections.line.classList.remove('open');
-      document.getElementById('choose').scrollIntoView({behavior:'smooth', block:'start'});
+      choiceSection.style.display = '';
+      choiceSection.scrollIntoView({behavior:'smooth', block:'start'});
     });
   });
   document.getElementById('new-request').addEventListener('click', function(){
@@ -610,7 +616,8 @@
     resetZip();
     resetAddrMethod();
     sections.success.classList.remove('open');
-    document.getElementById('choose').scrollIntoView({behavior:'smooth', block:'start'});
+    choiceSection.style.display = '';
+    choiceSection.scrollIntoView({behavior:'smooth', block:'start'});
   });
 
   // ---- postal code lookup ----
