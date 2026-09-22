@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>สมัครเน็ตบ้านทรู | True</title>
-<meta name="description" content="กรอกข้อมูลให้เจ้าหน้าที่ True ติดต่อกลับ หรือแชทกับเจ้าหน้าที่ทันที">
+<title id="page-title">สมัครเน็ตบ้านทรู | True</title>
+<meta id="page-desc" name="description" content="กรอกข้อมูลให้เจ้าหน้าที่ True ติดต่อกลับ หรือแชทกับเจ้าหน้าที่ทันที">
 
 <!--
   ============================================================
-  True App x TOL — Drop Lead Landing Page (rev.3)
+  True App x TOL — Drop Lead Landing Page (rev.5)
   ------------------------------------------------------------
   ไฟล์ที่ต้องวางไว้ด้วยกัน (โครงสร้างโฟลเดอร์ — วางไว้ที่ root ของ repo ห้ามซ้อนโฟลเดอร์):
     /index.html
@@ -16,17 +16,25 @@
     /fonts/BetterTogether-Medium.woff2
     /fonts/BetterTogether-Bold.woff2
     /fonts/BetterTogether-Light.woff2
-    /assets/hero-banner.png
+    /assets/hero-banner.png       (ไทย)
+    /assets/hero-banner-en.jpg    (อังกฤษ)
+    /assets/hero-banner-zh.jpg    (จีน)
+    /assets/hero-banner-ja.jpg    (ญี่ปุ่น)
+    /assets/hero-banner-ru.jpg    (รัสเซีย)
+    /assets/hero-banner-my.jpg    (เมียนมา)
+    /assets/logo-true-online.png
     /assets/zip-data.js
 
   ต้องแก้ก่อนขึ้นระบบจริง (search "TODO"):
   1) CONFIG.SUBMIT_ENDPOINT → URL ของ Apps Script / Cloud Run ที่รับข้อมูล (Path A)
   2) CONFIG.LINE_OA_URL     → ลิงก์ Line OA สำหรับแชทกับเจ้าหน้าที่ (Path B)
 
-  rev.3 เปลี่ยนจาก rev.2:
-  - เอา gradient wash (background/header/form-card) ออก กลับไปใช้สีพื้นเรียบแบบเวอร์ชันแรก
-  - แก้ font: เพิ่ม font-family:inherit ให้ button/input/select/textarea (ปุ่มไม่ inherit ฟอนต์จาก body โดย default)
-  - ที่อยู่ติดตั้ง: ให้เลือกก่อนว่าจะ "ปักหมุดสถานที่ติดตั้ง" (GPS) หรือ "กรอกที่อยู่เต็ม" (บ้านเลขที่/หมู่บ้าน/ถนน)
+  rev.5 เปลี่ยนจาก rev.4:
+  - เพิ่มภาษาญี่ปุ่น (JA) รัสเซีย (RU) เมียนมา (MY) — รวมเป็น 6 ภาษา: ไทย/อังกฤษ/จีน/ญี่ปุ่น/รัสเซีย/เมียนมา
+  - รูป hero banner เปลี่ยนตามภาษาที่เลือก (ใช้ไฟล์รูปแยกรายภาษาที่ทีมกราฟิกทำมาให้)
+  - เพิ่มไอคอนลูกโลกข้างปุ่มเลือกภาษา
+  - ผลลัพธ์ที่อยู่จากรหัสไปรษณีย์ (ตำบล/อำเภอ/จังหวัด): ถ้าเลือกภาษาไทย โชว์ชื่อไทย, ถ้าเลือกภาษาอื่น (EN/ZH/JA/RU/MY) โชว์เป็นชื่อโรมัน/อังกฤษทั้งหมด
+    (zip-data.js อัปเดตให้มีทั้งชื่อไทยและอังกฤษต่อรหัสไปรษณีย์แล้ว)
   ============================================================
 -->
 
@@ -67,7 +75,7 @@
     --ok:#12805C;
     --radius:14px;
     --shadow:0 8px 24px rgba(16,20,60,.08);
-    --font:'Better Together','Noto Sans Thai','Inter','Tahoma',sans-serif;
+    --font:'Better Together','Noto Sans Thai','Noto Sans JP','Noto Sans SC','Inter','Tahoma',sans-serif;
   }
 
   *{box-sizing:border-box;}
@@ -102,17 +110,30 @@
   }
   header .row{
     max-width:520px;margin:0 auto;padding:12px 20px;
-    display:flex;align-items:center;justify-content:space-between;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
   }
-  .logo{display:flex;align-items:center;gap:8px;}
-  .logo svg{height:22px;width:auto;}
+  .logo{display:flex;align-items:center;gap:8px;flex:none;}
   .logo img{height:26px;width:auto;display:block;}
+  .header-right{display:flex;align-items:center;gap:8px;flex:none;}
   .call-chip{
     font-size:13px;font-weight:600;color:var(--navy);
     display:flex;align-items:center;gap:6px;
-    text-decoration:none;
+    text-decoration:none;white-space:nowrap;
   }
-  .call-chip svg{width:15px;height:15px;}
+  .call-chip svg{width:15px;height:15px;flex:none;}
+  .lang-switch{
+    display:flex;align-items:center;gap:5px;
+    border:1px solid var(--line);border-radius:999px;
+    padding:5px 8px 5px 9px;background:#fff;
+  }
+  .lang-switch svg{width:14px;height:14px;flex:none;color:var(--ink-soft);}
+  .lang-select{
+    font-size:12.5px;font-weight:600;color:var(--navy);
+    border:none;padding:0 16px 0 2px;background:#fff;cursor:pointer;
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B5468' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat;background-position:right center;background-size:11px;
+  }
 
   main{padding-bottom:56px;}
 
@@ -348,10 +369,23 @@
     <div class="logo" aria-label="True Online">
       <img src="./assets/logo-true-online.png" alt="True Online home next" height="26">
     </div>
-    <a class="call-chip" href="tel:1242">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      1242
-    </a>
+    <div class="header-right">
+      <a class="call-chip" href="tel:1242">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        1242
+      </a>
+      <label class="lang-switch" for="lang-select" aria-label="Language / ภาษา / 语言 / 言語 / Язык / ဘာသာစကား">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <select class="lang-select" id="lang-select">
+          <option value="th">ไทย</option>
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+          <option value="ru">Русский</option>
+          <option value="my">မြန်မာ</option>
+        </select>
+      </label>
+    </div>
   </div>
 </header>
 
@@ -360,11 +394,11 @@
   <!-- ============ HERO ============ -->
   <section class="hero">
     <div class="wrap">
-      <h1>สมัครเน็ตบ้านทรู ให้เจ้าหน้าที่ติดต่อกลับ</h1>
-      <p class="lede">กรอกข้อมูลไม่ถึง 1 นาที เจ้าหน้าที่ True ติดต่อกลับเพื่อแนะนำแพ็กเกจที่เหมาะกับบ้านคุณ ไม่มีค่าใช้จ่ายในการสอบถาม</p>
+      <h1 data-i18n="hero_h1">สมัครเน็ตบ้านทรู ให้เจ้าหน้าที่ติดต่อกลับ</h1>
+      <p class="lede" data-i18n="hero_lede">กรอกข้อมูลไม่ถึง 1 นาที เจ้าหน้าที่ True ติดต่อกลับเพื่อแนะนำแพ็กเกจที่เหมาะกับบ้านคุณ ไม่มีค่าใช้จ่ายในการสอบถาม</p>
 
       <div class="hero-banner">
-        <img src="./assets/hero-banner.png" alt="โปรโมชันเน็ตบ้านทรู 500/500 Mbps เพียง 499 บาท/เดือน" width="1920" height="618">
+        <img id="hero-banner-img" src="./assets/hero-banner.png" data-i18n-src="hero_banner_img" data-i18n-alt="hero_banner_alt" alt="โปรโมชันเน็ตบ้านทรู 500/500 Mbps เพียง 499 บาท/เดือน" width="1824" height="576">
       </div>
     </div>
   </section>
@@ -372,8 +406,8 @@
   <!-- ============ PATH CHOICE ============ -->
   <section class="choice" id="choose" data-role="choice-section">
     <div class="wrap">
-      <p class="section-title">เลือกวิธีติดต่อที่สะดวก</p>
-      <p class="section-sub">เลือกได้ทั้งให้เจ้าหน้าที่โทรกลับ หรือแชทคุยกับเจ้าหน้าที่ทันที</p>
+      <p class="section-title" data-i18n="choice_title">เลือกวิธีติดต่อที่สะดวก</p>
+      <p class="section-sub" data-i18n="choice_sub">เลือกได้ทั้งให้เจ้าหน้าที่โทรกลับ หรือแชทคุยกับเจ้าหน้าที่ทันที</p>
 
       <div class="choice-grid">
         <button type="button" class="choice-card" id="pick-callback">
@@ -381,8 +415,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </span>
           <span class="txt">
-            <strong>ให้เจ้าหน้าที่โทรกลับ</strong>
-            <span>กรอกชื่อและเบอร์โทร เลือกช่วงเวลาที่สะดวก</span>
+            <strong data-i18n="choice_callback_title">ให้เจ้าหน้าที่โทรกลับ</strong>
+            <span data-i18n="choice_callback_sub">กรอกชื่อและเบอร์โทร เลือกช่วงเวลาที่สะดวก</span>
           </span>
           <span class="chev">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -394,8 +428,8 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </span>
           <span class="txt">
-            <strong>แชทกับเจ้าหน้าที่ทันที</strong>
-            <span>คุยผ่าน LINE เจ้าหน้าที่ตอบกลับภายใน 5 นาที</span>
+            <strong data-i18n="choice_line_title">แชทกับเจ้าหน้าที่ทันที</strong>
+            <span data-i18n="choice_line_sub">คุยผ่าน LINE เจ้าหน้าที่ตอบกลับภายใน 5 นาที</span>
           </span>
           <span class="chev">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -410,52 +444,52 @@
     <div class="wrap">
       <button type="button" class="back-link" data-back>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        กลับ
+        <span data-i18n="back">กลับ</span>
       </button>
 
-      <p class="section-title">ให้เจ้าหน้าที่โทรกลับ</p>
-      <p class="section-sub">กรอกข้อมูลด้านล่าง เจ้าหน้าที่จะติดต่อกลับตามช่วงเวลาที่เลือก</p>
+      <p class="section-title" data-i18n="cb_title">ให้เจ้าหน้าที่โทรกลับ</p>
+      <p class="section-sub" data-i18n="cb_sub">กรอกข้อมูลด้านล่าง เจ้าหน้าที่จะติดต่อกลับตามช่วงเวลาที่เลือก</p>
 
       <form class="form-card" id="lead-form" novalidate>
 
         <div class="field" id="field-name">
-          <label for="name">ชื่อ-นามสกุล</label>
-          <input type="text" id="name" name="name" autocomplete="name" placeholder="เช่น สมชาย ใจดี">
-          <p class="err">กรุณากรอกชื่อ-นามสกุล</p>
+          <label for="name" data-i18n="label_name">ชื่อ-นามสกุล</label>
+          <input type="text" id="name" name="name" autocomplete="name" data-i18n-ph="ph_name" placeholder="เช่น สมชาย ใจดี">
+          <p class="err" data-i18n="err_name">กรุณากรอกชื่อ-นามสกุล</p>
         </div>
 
         <div class="field" id="field-phone">
-          <label for="phone">เบอร์โทรติดต่อกลับ</label>
+          <label for="phone" data-i18n="label_phone">เบอร์โทรติดต่อกลับ</label>
           <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel" placeholder="08X-XXX-XXXX" maxlength="10">
-          <p class="err">กรุณากรอกเบอร์โทร 10 หลักให้ถูกต้อง</p>
+          <p class="err" data-i18n="err_phone">กรุณากรอกเบอร์โทร 10 หลักให้ถูกต้อง</p>
         </div>
 
         <div class="field" id="field-time">
-          <label>ช่วงเวลาที่สะดวกให้ติดต่อกลับ</label>
+          <label data-i18n="label_time">ช่วงเวลาที่สะดวกให้ติดต่อกลับ</label>
           <div class="time-grid">
-            <label class="time-opt"><input type="radio" name="callback_time" value="asap"><span>เร็วที่สุด</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="asap"><span data-i18n="opt_asap">เร็วที่สุด</span></label>
             <label class="time-opt"><input type="radio" name="callback_time" value="morning"><span>09:00–12:00</span></label>
             <label class="time-opt"><input type="radio" name="callback_time" value="afternoon"><span>12:00–16:00</span></label>
             <label class="time-opt"><input type="radio" name="callback_time" value="evening"><span>16:00–20:00</span></label>
           </div>
-          <p class="err">กรุณาเลือกช่วงเวลาที่สะดวก</p>
+          <p class="err" data-i18n="err_time">กรุณาเลือกช่วงเวลาที่สะดวก</p>
         </div>
 
         <div class="field">
-          <label>รายละเอียดที่อยู่ติดตั้ง <span class="opt">(ไม่บังคับ)</span></label>
+          <label><span data-i18n="label_addr_detail">รายละเอียดที่อยู่ติดตั้ง</span> <span class="opt" data-i18n="opt_optional">(ไม่บังคับ)</span></label>
           <div class="addr-method">
             <label class="addr-method-opt">
               <input type="radio" name="addr_method" value="pin">
               <span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                ปักหมุดสถานที่ติดตั้ง
+                <span data-i18n="addr_pin_label">ปักหมุดสถานที่ติดตั้ง</span>
               </span>
             </label>
             <label class="addr-method-opt">
               <input type="radio" name="addr_method" value="text">
               <span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                กรอกที่อยู่เต็ม
+                <span data-i18n="addr_text_label">กรอกที่อยู่เต็ม</span>
               </span>
             </label>
           </div>
@@ -465,7 +499,7 @@
             <div class="pin-box">
               <button type="button" class="pin-btn" id="pin-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                ใช้ตำแหน่งปัจจุบัน
+                <span data-i18n="pin_btn">ใช้ตำแหน่งปัจจุบัน</span>
               </button>
               <p class="pin-status" id="pin-status"></p>
             </div>
@@ -474,29 +508,29 @@
           <!-- ตัวเลือก: กรอกที่อยู่เต็ม -->
           <div class="addr-detail" id="addr-text">
             <div class="field" id="field-zip">
-              <label for="zipcode">รหัสไปรษณีย์พื้นที่ติดตั้ง <span class="opt">(ไม่บังคับ)</span></label>
-              <input type="tel" id="zipcode" name="zipcode" inputmode="numeric" placeholder="เช่น 10110" maxlength="5">
+              <label for="zipcode"><span data-i18n="label_zip">รหัสไปรษณีย์พื้นที่ติดตั้ง</span> <span class="opt" data-i18n="opt_optional">(ไม่บังคับ)</span></label>
+              <input type="tel" id="zipcode" name="zipcode" inputmode="numeric" data-i18n-ph="ph_zip" placeholder="เช่น 10110" maxlength="5">
               <div class="zip-result" id="zip-result">
                 <div class="zip-rows" id="zip-rows">
-                  <div class="row"><span>ตำบล/แขวง</span><b id="zip-sub">—</b></div>
-                  <div class="row"><span>อำเภอ/เขต</span><b id="zip-dist">—</b></div>
-                  <div class="row"><span>จังหวัด</span><b id="zip-prov">—</b></div>
+                  <div class="row"><span data-i18n="zip_row_sub">ตำบล/แขวง</span><b id="zip-sub">—</b></div>
+                  <div class="row"><span data-i18n="zip_row_dist">อำเภอ/เขต</span><b id="zip-dist">—</b></div>
+                  <div class="row"><span data-i18n="zip_row_prov">จังหวัด</span><b id="zip-prov">—</b></div>
                 </div>
                 <select id="zip-select" style="display:none;"></select>
               </div>
               <p class="zip-hint" id="zip-hint"></p>
             </div>
             <div class="field">
-              <label for="house-no">บ้านเลขที่</label>
-              <input type="text" id="house-no" name="house_no" placeholder="เช่น 99/9">
+              <label for="house-no" data-i18n="label_house">บ้านเลขที่</label>
+              <input type="text" id="house-no" name="house_no" data-i18n-ph="ph_house" placeholder="เช่น 99/9">
             </div>
             <div class="field">
-              <label for="village">หมู่บ้าน/หมู่ที่ <span class="opt">(ถ้ามี)</span></label>
-              <input type="text" id="village" name="village" placeholder="เช่น หมู่บ้านสุขใจ หมู่ 5">
+              <label for="village"><span data-i18n="label_village">หมู่บ้าน/หมู่ที่</span> <span class="opt" data-i18n="opt_ifany">(ถ้ามี)</span></label>
+              <input type="text" id="village" name="village" data-i18n-ph="ph_village" placeholder="เช่น หมู่บ้านสุขใจ หมู่ 5">
             </div>
             <div class="field">
-              <label for="road">ถนน/ซอย <span class="opt">(ถ้ามี)</span></label>
-              <input type="text" id="road" name="road" placeholder="เช่น ถนนสุขุมวิท ซอย 21">
+              <label for="road"><span data-i18n="label_road">ถนน/ซอย</span> <span class="opt" data-i18n="opt_ifany">(ถ้ามี)</span></label>
+              <input type="text" id="road" name="road" data-i18n-ph="ph_road" placeholder="เช่น ถนนสุขุมวิท ซอย 21">
             </div>
           </div>
         </div>
@@ -504,20 +538,20 @@
         <div class="consent">
           <input type="checkbox" id="pdpa" name="pdpa">
           <p>
-            ข้าพเจ้ายินยอมให้ True เก็บรวบรวมและใช้ข้อมูลข้างต้นเพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์ ตาม
-            <a href="https://www.true.th/home/privacy-policy" target="_blank" rel="noopener">นโยบายความเป็นส่วนตัว</a> ของบริษัท
+            <span data-i18n="consent_pre">ข้าพเจ้ายินยอมให้ True เก็บรวบรวมและใช้ข้อมูลข้างต้นเพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์ ตาม</span>
+            <a href="https://www.true.th/home/privacy-policy" target="_blank" rel="noopener" data-i18n="privacy_link">นโยบายความเป็นส่วนตัว</a><span data-i18n="consent_post"> ของบริษัท</span>
           </p>
         </div>
-        <p class="err" id="pdpa-err" style="display:none;">กรุณายอมรับนโยบายความเป็นส่วนตัวก่อนส่งข้อมูล</p>
+        <p class="err" id="pdpa-err" data-i18n="pdpa_err" style="display:none;">กรุณายอมรับนโยบายความเป็นส่วนตัวก่อนส่งข้อมูล</p>
 
         <button type="submit" class="submit-btn" id="submit-btn">
           <span class="spinner"></span>
-          <span class="btn-label">ส่งข้อมูล</span>
+          <span class="btn-label" data-i18n="submit_label">ส่งข้อมูล</span>
         </button>
 
         <div class="sla-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 07:00–20:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป</span>
+          <span data-i18n="sla_note">*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 07:00–20:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป</span>
         </div>
       </form>
     </div>
@@ -528,18 +562,18 @@
     <div class="wrap">
       <button type="button" class="back-link" data-back>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        กลับ
+        <span data-i18n="back">กลับ</span>
       </button>
 
-      <p class="section-title">แชทกับเจ้าหน้าที่</p>
-      <p class="section-sub">คุยกับเจ้าหน้าที่ True ผ่าน LINE ได้ทันที</p>
+      <p class="section-title" data-i18n="line_title">แชทกับเจ้าหน้าที่</p>
+      <p class="section-sub" data-i18n="line_sub">คุยกับเจ้าหน้าที่ True ผ่าน LINE ได้ทันที</p>
 
       <div class="line-card">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 5.9 2 10.7c0 4.3 3.6 7.9 8.4 8.6.3.1.8.2.9.5.1.3.1.7 0 1l-.2 1.3c0 .3-.2 1.1.9.6 1.2-.5 6.4-3.8 8.7-6.5C22.1 14.5 22 12.6 22 10.7 22 5.9 17.5 2 12 2z"/></svg>
         <h3>LINE Official Account: True</h3>
-        <p>แตะปุ่มด้านล่างเพื่อเปิดแชท เจ้าหน้าที่ตอบกลับภายใน 5 นาทีในเวลาทำการ</p>
+        <p data-i18n="line_card_p">แตะปุ่มด้านล่างเพื่อเปิดแชท เจ้าหน้าที่ตอบกลับภายใน 5 นาทีในเวลาทำการ</p>
         <!-- TODO: แทน # ด้วยลิงก์ LINE OA จริง เช่น https://line.me/R/ti/p/@yourlineid -->
-        <a class="line-btn" id="line-cta" href="#" target="_blank" rel="noopener">
+        <a class="line-btn" id="line-cta" href="#" target="_blank" rel="noopener" data-i18n="line_btn">
           คลิก! เปิดแชท Line
         </a>
       </div>
@@ -552,11 +586,11 @@
       <div class="check">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <h2>ส่งข้อมูลเรียบร้อย</h2>
-      <p>เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้</p>
-      <div class="ref">เลขที่คำขอ: <span id="ref-no">—</span></div>
+      <h2 data-i18n="success_h2">ส่งข้อมูลเรียบร้อย</h2>
+      <p data-i18n="success_p">เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้</p>
+      <div class="ref"><span data-i18n="success_ref_label">เลขที่คำขอ:</span> <span id="ref-no">—</span></div>
       <br>
-      <button type="button" class="again" id="new-request">ส่งคำขออีกครั้ง</button>
+      <button type="button" class="again" id="new-request" data-i18n="success_again">ส่งคำขออีกครั้ง</button>
     </div>
   </section>
 
@@ -564,7 +598,7 @@
 
 <footer>
   <div class="wrap">
-    <p>บริษัท ทรู คอร์ปอเรชั่น จำกัด (มหาชน) เก็บและใช้ข้อมูลที่ท่านให้ไว้เพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์เท่านั้น อ่าน<a href="https://www.true.th/home/privacy-policy" target="_blank" rel="noopener">นโยบายความเป็นส่วนตัว</a></p>
+    <p><span data-i18n="footer_pre">บริษัท ทรู คอร์ปอเรชั่น จำกัด (มหาชน) เก็บและใช้ข้อมูลที่ท่านให้ไว้เพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์เท่านั้น อ่าน</span><a href="https://www.true.th/home/privacy-policy" target="_blank" rel="noopener" data-i18n="privacy_link">นโยบายความเป็นส่วนตัว</a></p>
     <p>© True Corporation Public Company Limited</p>
   </div>
 </footer>
@@ -583,7 +617,451 @@
   };
   // ================================================================================
 
-  document.getElementById('line-cta').href = CONFIG.LINE_OA_URL;
+  // ===================== i18n: ไทย / English / 中文 / 日本語 / Русский / မြန်မာ =====================
+  var I18N = {
+    th: {
+      page_title: "สมัครเน็ตบ้านทรู | True",
+      page_desc: "กรอกข้อมูลให้เจ้าหน้าที่ True ติดต่อกลับ หรือแชทกับเจ้าหน้าที่ทันที",
+      hero_h1: "สมัครเน็ตบ้านทรู ให้เจ้าหน้าที่ติดต่อกลับ",
+      hero_lede: "กรอกข้อมูลไม่ถึง 1 นาที เจ้าหน้าที่ True ติดต่อกลับเพื่อแนะนำแพ็กเกจที่เหมาะกับบ้านคุณ ไม่มีค่าใช้จ่ายในการสอบถาม",
+      hero_banner_img: "./assets/hero-banner.png",
+      hero_banner_alt: "โปรโมชันเน็ตบ้านทรู 500/500 Mbps เพียง 499 บาท/เดือน",
+      choice_title: "เลือกวิธีติดต่อที่สะดวก",
+      choice_sub: "เลือกได้ทั้งให้เจ้าหน้าที่โทรกลับ หรือแชทคุยกับเจ้าหน้าที่ทันที",
+      choice_callback_title: "ให้เจ้าหน้าที่โทรกลับ",
+      choice_callback_sub: "กรอกชื่อและเบอร์โทร เลือกช่วงเวลาที่สะดวก",
+      choice_line_title: "แชทกับเจ้าหน้าที่ทันที",
+      choice_line_sub: "คุยผ่าน LINE เจ้าหน้าที่ตอบกลับภายใน 5 นาที",
+      back: "กลับ",
+      cb_title: "ให้เจ้าหน้าที่โทรกลับ",
+      cb_sub: "กรอกข้อมูลด้านล่าง เจ้าหน้าที่จะติดต่อกลับตามช่วงเวลาที่เลือก",
+      label_name: "ชื่อ-นามสกุล",
+      ph_name: "เช่น สมชาย ใจดี",
+      err_name: "กรุณากรอกชื่อ-นามสกุล",
+      label_phone: "เบอร์โทรติดต่อกลับ",
+      err_phone: "กรุณากรอกเบอร์โทร 10 หลักให้ถูกต้อง",
+      label_time: "ช่วงเวลาที่สะดวกให้ติดต่อกลับ",
+      opt_asap: "เร็วที่สุด",
+      err_time: "กรุณาเลือกช่วงเวลาที่สะดวก",
+      label_addr_detail: "รายละเอียดที่อยู่ติดตั้ง",
+      opt_optional: "(ไม่บังคับ)",
+      opt_ifany: "(ถ้ามี)",
+      addr_pin_label: "ปักหมุดสถานที่ติดตั้ง",
+      addr_text_label: "กรอกที่อยู่เต็ม",
+      pin_btn: "ใช้ตำแหน่งปัจจุบัน",
+      pin_searching: "กำลังค้นหาตำแหน่ง...",
+      pin_saved_prefix: "บันทึกตำแหน่งแล้ว — ",
+      pin_view_map: "ดูบนแผนที่",
+      pin_err_nogeoloc: "อุปกรณ์นี้ไม่รองรับการปักหมุดตำแหน่ง กรุณาเลือก \"กรอกที่อยู่เต็ม\" แทน",
+      pin_err_denied: "ไม่สามารถเข้าถึงตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่ง หรือเลือก \"กรอกที่อยู่เต็ม\" แทน",
+      label_zip: "รหัสไปรษณีย์พื้นที่ติดตั้ง",
+      ph_zip: "เช่น 10110",
+      zip_row_sub: "ตำบล/แขวง",
+      zip_row_dist: "อำเภอ/เขต",
+      zip_row_prov: "จังหวัด",
+      zip_select_placeholder: "เลือกตำบล/แขวงที่ถูกต้อง",
+      zip_hint_multi: "รหัสไปรษณีย์นี้มีหลายพื้นที่ กรุณาเลือกตำบล/แขวงที่ถูกต้องด้านบน",
+      zip_hint_notfound: "ไม่พบข้อมูลรหัสไปรษณีย์นี้ กรุณาตรวจสอบอีกครั้ง",
+      label_house: "บ้านเลขที่",
+      ph_house: "เช่น 99/9",
+      label_village: "หมู่บ้าน/หมู่ที่",
+      ph_village: "เช่น หมู่บ้านสุขใจ หมู่ 5",
+      label_road: "ถนน/ซอย",
+      ph_road: "เช่น ถนนสุขุมวิท ซอย 21",
+      consent_pre: "ข้าพเจ้ายินยอมให้ True เก็บรวบรวมและใช้ข้อมูลข้างต้นเพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์ ตาม",
+      privacy_link: "นโยบายความเป็นส่วนตัว",
+      consent_post: " ของบริษัท",
+      pdpa_err: "กรุณายอมรับนโยบายความเป็นส่วนตัวก่อนส่งข้อมูล",
+      submit_label: "ส่งข้อมูล",
+      sla_note: "*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 07:00–20:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป",
+      line_title: "แชทกับเจ้าหน้าที่",
+      line_sub: "คุยกับเจ้าหน้าที่ True ผ่าน LINE ได้ทันที",
+      line_card_p: "แตะปุ่มด้านล่างเพื่อเปิดแชท เจ้าหน้าที่ตอบกลับภายใน 5 นาทีในเวลาทำการ",
+      line_btn: "คลิก! เปิดแชท Line",
+      success_h2: "ส่งข้อมูลเรียบร้อย",
+      success_p: "เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้",
+      success_ref_label: "เลขที่คำขอ:",
+      success_again: "ส่งคำขออีกครั้ง",
+      footer_pre: "บริษัท ทรู คอร์ปอเรชั่น จำกัด (มหาชน) เก็บและใช้ข้อมูลที่ท่านให้ไว้เพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์เท่านั้น อ่าน"
+    },
+    en: {
+      page_title: "Apply for True Home Internet | True",
+      page_desc: "Fill in your details for a True callback, or chat with our staff right away",
+      hero_h1: "Apply for True Home Internet — Request a Callback",
+      hero_lede: "Takes less than a minute. A True representative will call you back to recommend the best plan for your home. There's no charge for the inquiry.",
+      hero_banner_img: "./assets/hero-banner-en.jpg",
+      hero_banner_alt: "True Home Internet promotion — 500/500 Mbps from only 499 THB/month",
+      choice_title: "Choose how you'd like to be contacted",
+      choice_sub: "Request a callback, or chat with our staff right away",
+      choice_callback_title: "Request a callback",
+      choice_callback_sub: "Enter your name and phone number, choose a convenient time",
+      choice_line_title: "Chat with our staff now",
+      choice_line_sub: "Chat via LINE — our staff replies within 5 minutes",
+      back: "Back",
+      cb_title: "Request a callback",
+      cb_sub: "Fill in the details below and we'll call you back at your chosen time",
+      label_name: "Full name",
+      ph_name: "e.g. John Smith",
+      err_name: "Please enter your full name",
+      label_phone: "Callback phone number",
+      err_phone: "Please enter a valid 10-digit phone number",
+      label_time: "Preferred time to be called back",
+      opt_asap: "As soon as possible",
+      err_time: "Please choose a preferred time",
+      label_addr_detail: "Installation address details",
+      opt_optional: "(optional)",
+      opt_ifany: "(if any)",
+      addr_pin_label: "Pin installation location",
+      addr_text_label: "Enter full address",
+      pin_btn: "Use current location",
+      pin_searching: "Locating...",
+      pin_saved_prefix: "Location saved — ",
+      pin_view_map: "View on map",
+      pin_err_nogeoloc: "This device doesn't support location pinning. Please choose \"Enter full address\" instead.",
+      pin_err_denied: "Couldn't access your location. Please allow location access, or choose \"Enter full address\" instead.",
+      label_zip: "Installation area postal code",
+      ph_zip: "e.g. 10110",
+      zip_row_sub: "Subdistrict",
+      zip_row_dist: "District",
+      zip_row_prov: "Province",
+      zip_select_placeholder: "Select the correct subdistrict",
+      zip_hint_multi: "This postal code covers multiple areas. Please select the correct subdistrict above.",
+      zip_hint_notfound: "Postal code not found. Please check and try again.",
+      label_house: "House number",
+      ph_house: "e.g. 99/9",
+      label_village: "Village / Moo",
+      ph_village: "e.g. Sukjai Village, Moo 5",
+      label_road: "Road / Soi",
+      ph_road: "e.g. Sukhumvit Rd., Soi 21",
+      consent_pre: "I consent to True collecting and using the information above to contact me and offer products, in accordance with the ",
+      privacy_link: "Privacy Policy",
+      consent_post: " of the company",
+      pdpa_err: "Please accept the Privacy Policy before submitting",
+      submit_label: "Submit",
+      sla_note: "*Our staff will call back within 5 minutes during service hours 07:00–20:00. Outside service hours, we'll call back during the next available window.",
+      line_title: "Chat with our staff",
+      line_sub: "Chat with a True representative on LINE right now",
+      line_card_p: "Tap the button below to start chatting. Our staff replies within 5 minutes during service hours.",
+      line_btn: "Tap to chat on Line",
+      success_h2: "Submitted successfully",
+      success_p: "Our staff will call you back at your chosen time.",
+      success_ref_label: "Reference no.:",
+      success_again: "Submit another request",
+      footer_pre: "True Corporation Public Company Limited collects and uses the information you provide only to contact you and offer products. Read our "
+    },
+    zh: {
+      page_title: "申请True家庭网络 | True",
+      page_desc: "填写资料让True工作人员回电，或立即与工作人员在线聊天",
+      hero_h1: "申请True家庭网络 — 请工作人员回电",
+      hero_lede: "填写不到1分钟，True工作人员将回电为您推荐最适合的套餐，咨询完全免费。",
+      hero_banner_img: "./assets/hero-banner-zh.jpg",
+      hero_banner_alt: "True家庭网络优惠 500/500 Mbps 低至每月499泰铢",
+      choice_title: "选择您方便的联系方式",
+      choice_sub: "可以选择让工作人员回电，或立即与工作人员在线聊天",
+      choice_callback_title: "请工作人员回电",
+      choice_callback_sub: "填写姓名和电话号码，选择方便的时间",
+      choice_line_title: "立即与工作人员聊天",
+      choice_line_sub: "通过LINE聊天，工作人员将在5分钟内回复",
+      back: "返回",
+      cb_title: "请工作人员回电",
+      cb_sub: "填写以下资料，工作人员将按您选择的时间回电",
+      label_name: "姓名",
+      ph_name: "例如：王小明",
+      err_name: "请填写姓名",
+      label_phone: "回电联系电话",
+      err_phone: "请填写正确的10位电话号码",
+      label_time: "方便回电的时间段",
+      opt_asap: "尽快",
+      err_time: "请选择方便的时间段",
+      label_addr_detail: "安装地址详情",
+      opt_optional: "（非必填）",
+      opt_ifany: "（如有）",
+      addr_pin_label: "定位安装地点",
+      addr_text_label: "填写完整地址",
+      pin_btn: "使用当前位置",
+      pin_searching: "正在定位...",
+      pin_saved_prefix: "已保存位置 — ",
+      pin_view_map: "查看地图",
+      pin_err_nogeoloc: "此设备不支持定位功能，请改选“填写完整地址”",
+      pin_err_denied: "无法获取您的位置，请允许访问位置信息，或改选“填写完整地址”",
+      label_zip: "安装地点邮政编码",
+      ph_zip: "例如：10110",
+      zip_row_sub: "分区/街道",
+      zip_row_dist: "区/县",
+      zip_row_prov: "府/省",
+      zip_select_placeholder: "请选择正确的分区",
+      zip_hint_multi: "此邮编覆盖多个地区，请在上方选择正确的分区",
+      zip_hint_notfound: "未找到此邮政编码，请重新检查",
+      label_house: "门牌号",
+      ph_house: "例如：99/9",
+      label_village: "村庄/村号",
+      ph_village: "例如：Sukjai村 5号村",
+      label_road: "路/巷",
+      ph_road: "例如：Sukhumvit路 21巷",
+      consent_pre: "本人同意True根据",
+      privacy_link: "隐私政策",
+      consent_post: "收集并使用以上信息，用于回电联系及产品推荐",
+      pdpa_err: "请先同意隐私政策再提交",
+      submit_label: "提交信息",
+      sla_note: "*工作时间07:00–20:00内，工作人员将在5分钟内回电；非工作时间将在下一时段回电",
+      line_title: "与工作人员聊天",
+      line_sub: "立即通过LINE与True工作人员聊天",
+      line_card_p: "点击下方按钮开始聊天，工作时间内5分钟回复",
+      line_btn: "点击开始LINE聊天",
+      success_h2: "提交成功",
+      success_p: "工作人员将按您选择的时间回电",
+      success_ref_label: "申请编号：",
+      success_again: "再次提交申请",
+      footer_pre: "True Corporation Public Company Limited 收集并使用您提供的信息，仅用于回电联系及产品推荐。阅读"
+    },
+    ja: {
+      page_title: "トゥルー・ホームインターネットのお申し込み | True",
+      page_desc: "Trueスタッフからの折り返しをご希望の方はご入力ください。またはLINEですぐにチャットできます",
+      hero_h1: "トゥルー・ホームインターネットに申し込む — 折り返しのご連絡を希望する",
+      hero_lede: "入力は1分もかかりません。Trueのスタッフが折り返しご連絡し、ご自宅に最適なプランをご案内します。お問い合わせは無料です。",
+      hero_banner_img: "./assets/hero-banner-ja.jpg",
+      hero_banner_alt: "トゥルー・ホームインターネット キャンペーン 500/500 Mbps 月額わずか499バーツ",
+      choice_title: "ご希望の連絡方法をお選びください",
+      choice_sub: "折り返しのご連絡、またはすぐにスタッフとチャットのどちらかをお選びいただけます",
+      choice_callback_title: "折り返しのご連絡を希望する",
+      choice_callback_sub: "お名前と電話番号をご入力の上、ご都合の良い時間帯をお選びください",
+      choice_line_title: "今すぐスタッフとチャットする",
+      choice_line_sub: "LINEでチャット — スタッフが5分以内に返信します",
+      back: "戻る",
+      cb_title: "折り返しのご連絡を希望する",
+      cb_sub: "以下をご入力ください。選択いただいた時間帯に折り返しご連絡いたします",
+      label_name: "お名前",
+      ph_name: "例：田中太郎",
+      err_name: "お名前をご入力ください",
+      label_phone: "折り返し先の電話番号",
+      err_phone: "10桁の正しい電話番号をご入力ください",
+      label_time: "折り返しご希望の時間帯",
+      opt_asap: "できるだけ早く",
+      err_time: "ご希望の時間帯をお選びください",
+      label_addr_detail: "設置先住所の詳細",
+      opt_optional: "（任意）",
+      opt_ifany: "（該当する場合）",
+      addr_pin_label: "設置場所をピンで指定する",
+      addr_text_label: "住所を入力する",
+      pin_btn: "現在地を使用する",
+      pin_searching: "位置情報を取得中...",
+      pin_saved_prefix: "位置情報を保存しました — ",
+      pin_view_map: "地図で見る",
+      pin_err_nogeoloc: "このデバイスは位置情報の指定に対応していません。「住所を入力する」を選択してください。",
+      pin_err_denied: "位置情報を取得できませんでした。位置情報へのアクセスを許可するか、「住所を入力する」を選択してください。",
+      label_zip: "設置先エリアの郵便番号",
+      ph_zip: "例：10110",
+      zip_row_sub: "タンボン（区）",
+      zip_row_dist: "アンプー（郡）",
+      zip_row_prov: "県",
+      zip_select_placeholder: "正しいタンボンを選択してください",
+      zip_hint_multi: "この郵便番号には複数のエリアがあります。上から正しいタンボンをお選びください。",
+      zip_hint_notfound: "この郵便番号は見つかりませんでした。もう一度ご確認ください。",
+      label_house: "番地",
+      ph_house: "例：99/9",
+      label_village: "村・ムー番号",
+      ph_village: "例：スックジャイ村 5区",
+      label_road: "通り・ソイ",
+      ph_road: "例：スクンビット通り ソイ21",
+      consent_pre: "本人は、上記の情報についてTrueが折り返し連絡および商品のご案内のために収集・利用することに、",
+      privacy_link: "プライバシーポリシー",
+      consent_post: "に基づき同意します",
+      pdpa_err: "送信前にプライバシーポリシーへの同意が必要です",
+      submit_label: "送信する",
+      sla_note: "※営業時間（7:00〜20:00）内は5分以内に折り返しご連絡いたします。営業時間外の場合は、次の対応時間帯にご連絡いたします。",
+      line_title: "スタッフとチャットする",
+      line_sub: "TrueのスタッフとLINEで今すぐチャットできます",
+      line_card_p: "下のボタンをタップしてチャットを開始してください。営業時間内は5分以内に返信いたします。",
+      line_btn: "タップしてLINEチャットを開始",
+      success_h2: "送信が完了しました",
+      success_p: "選択いただいた時間帯にスタッフより折り返しご連絡いたします。",
+      success_ref_label: "受付番号：",
+      success_again: "もう一度送信する",
+      footer_pre: "True Corporation Public Company Limitedは、ご提供いただいた情報を折り返し連絡および商品のご案内のみに使用します。詳細は"
+    },
+    ru: {
+      page_title: "Заявка на домашний интернет True | True",
+      page_desc: "Оставьте данные, чтобы сотрудник True перезвонил вам, или напишите в чат прямо сейчас",
+      hero_h1: "Подключить домашний интернет True — заказать обратный звонок",
+      hero_lede: "Это займёт меньше минуты. Представитель True перезвонит вам и подберёт лучший тариф для вашего дома. Консультация бесплатна.",
+      hero_banner_img: "./assets/hero-banner-ru.jpg",
+      hero_banner_alt: "Акция True Home Internet — 500/500 Мбит/с всего за 499 бат/мес",
+      choice_title: "Выберите удобный способ связи",
+      choice_sub: "Закажите обратный звонок или напишите в чат прямо сейчас",
+      choice_callback_title: "Заказать обратный звонок",
+      choice_callback_sub: "Укажите имя и номер телефона, выберите удобное время",
+      choice_line_title: "Написать в чат прямо сейчас",
+      choice_line_sub: "Чат в LINE — сотрудник ответит в течение 5 минут",
+      back: "Назад",
+      cb_title: "Заказать обратный звонок",
+      cb_sub: "Заполните форму ниже — мы перезвоним в выбранное вами время",
+      label_name: "Имя и фамилия",
+      ph_name: "напр. Иван Иванов",
+      err_name: "Пожалуйста, укажите имя и фамилию",
+      label_phone: "Номер телефона для звонка",
+      err_phone: "Пожалуйста, укажите корректный 10-значный номер",
+      label_time: "Удобное время для звонка",
+      opt_asap: "Как можно скорее",
+      err_time: "Пожалуйста, выберите удобное время",
+      label_addr_detail: "Данные адреса установки",
+      opt_optional: "(необязательно)",
+      opt_ifany: "(если есть)",
+      addr_pin_label: "Указать место установки на карте",
+      addr_text_label: "Ввести полный адрес",
+      pin_btn: "Использовать текущее местоположение",
+      pin_searching: "Определение местоположения...",
+      pin_saved_prefix: "Местоположение сохранено — ",
+      pin_view_map: "Посмотреть на карте",
+      pin_err_nogeoloc: "Это устройство не поддерживает определение местоположения. Пожалуйста, выберите «Ввести полный адрес».",
+      pin_err_denied: "Не удалось определить местоположение. Разрешите доступ к геолокации или выберите «Ввести полный адрес».",
+      label_zip: "Почтовый индекс места установки",
+      ph_zip: "напр. 10110",
+      zip_row_sub: "Тамбон (район)",
+      zip_row_dist: "Ампхе (округ)",
+      zip_row_prov: "Провинция",
+      zip_select_placeholder: "Выберите правильный тамбон",
+      zip_hint_multi: "Этот индекс охватывает несколько районов. Пожалуйста, выберите правильный тамбон выше.",
+      zip_hint_notfound: "Почтовый индекс не найден. Пожалуйста, проверьте и попробуйте снова.",
+      label_house: "Номер дома",
+      ph_house: "напр. 99/9",
+      label_village: "Деревня/Му",
+      ph_village: "напр. дер. Sukjai, Му 5",
+      label_road: "Улица/Сой",
+      ph_road: "напр. ул. Sukhumvit, Сой 21",
+      consent_pre: "Я согласен(на) на сбор и использование компанией True указанных выше данных для обратной связи и предложения продуктов в соответствии с ",
+      privacy_link: "Политикой конфиденциальности",
+      consent_post: " компании",
+      pdpa_err: "Перед отправкой необходимо принять Политику конфиденциальности",
+      submit_label: "Отправить",
+      sla_note: "*Сотрудник перезвонит в течение 5 минут в рабочее время 07:00–20:00. Вне рабочего времени звонок поступит в следующий доступный период.",
+      line_title: "Написать сотруднику",
+      line_sub: "Напишите представителю True в LINE прямо сейчас",
+      line_card_p: "Нажмите кнопку ниже, чтобы начать чат. В рабочее время сотрудник ответит в течение 5 минут.",
+      line_btn: "Нажмите, чтобы начать чат в Line",
+      success_h2: "Заявка успешно отправлена",
+      success_p: "Сотрудник перезвонит вам в выбранное время.",
+      success_ref_label: "Номер заявки:",
+      success_again: "Отправить ещё одну заявку",
+      footer_pre: "True Corporation Public Company Limited собирает и использует предоставленные вами данные исключительно для обратной связи и предложения продуктов. Подробнее: "
+    },
+    my: {
+      page_title: "True အိမ်သုံးအင်တာနက် လျှောက်ထားရန် | True",
+      page_desc: "True ဝန်ထမ်းမှ ပြန်လည်ဆက်သွယ်ပေးရန် သို့မဟုတ် ချက်ချင်းစကားပြောနိုင်ရန် အချက်အလက်ဖြည့်ပါ",
+      hero_h1: "True အိမ်သုံးအင်တာနက် လျှောက်ထားရန် — ပြန်လည်ဆက်သွယ်ပေးရန် တောင်းဆိုပါ",
+      hero_lede: "၁ မိနစ်ထက်နည်းသော အချိန်ဖြင့် ဖြည့်စွက်နိုင်ပါသည်။ True ဝန်ထမ်းမှ သင့်အိမ်နှင့်သင့်လျော်သည့် အစီအစဉ်ကို ညွှန်ကြားရန် ပြန်လည်ဆက်သွယ်ပါမည်။ မေးမြန်းခြင်းအတွက် အခကြေးငွေမရှိပါ။",
+      hero_banner_img: "./assets/hero-banner-my.jpg",
+      hero_banner_alt: "True အိမ်သုံးအင်တာနက် ပရိုမိုးရှင်း 500/500 Mbps လစဉ် 499 ဘတ်သာ",
+      choice_title: "အဆင်ပြေသော ဆက်သွယ်နည်းကို ရွေးချယ်ပါ",
+      choice_sub: "ပြန်လည်ဆက်သွယ်ပေးစေရန် သို့မဟုတ် ဝန်ထမ်းနှင့် ချက်ချင်းစကားပြောရန် ရွေးချယ်နိုင်ပါသည်",
+      choice_callback_title: "ပြန်လည်ဆက်သွယ်ပေးရန် တောင်းဆိုပါ",
+      choice_callback_sub: "အမည်နှင့် ဖုန်းနံပါတ်ဖြည့်၍ အဆင်ပြေသည့်အချိန်ကို ရွေးပါ",
+      choice_line_title: "ဝန်ထမ်းနှင့် ယခုချက်ချင်းစကားပြောပါ",
+      choice_line_sub: "LINE မှတစ်ဆင့်စကားပြောပါ — ဝန်ထမ်းမှ ၅ မိနစ်အတွင်း ပြန်ကြားပါမည်",
+      back: "နောက်သို့",
+      cb_title: "ပြန်လည်ဆက်သွယ်ပေးရန် တောင်းဆိုပါ",
+      cb_sub: "အောက်ပါအချက်အလက်များကို ဖြည့်စွက်ပါ။ သင်ရွေးချယ်သည့်အချိန်တွင် ပြန်လည်ဆက်သွယ်ပါမည်",
+      label_name: "အမည်",
+      ph_name: "ဥပမာ - မောင်မောင်",
+      err_name: "အမည်ကို ဖြည့်စွက်ပါ",
+      label_phone: "ပြန်ဆက်သွယ်ရန် ဖုန်းနံပါတ်",
+      err_phone: "ဂဏန်း ၁၀ လုံးပါသော ဖုန်းနံပါတ်ကို မှန်ကန်စွာ ဖြည့်စွက်ပါ",
+      label_time: "ပြန်ဆက်သွယ်ရန် အဆင်ပြေသောအချိန်",
+      opt_asap: "အမြန်ဆုံး",
+      err_time: "အဆင်ပြေသည့်အချိန်ကို ရွေးချယ်ပါ",
+      label_addr_detail: "တပ်ဆင်မည့်နေရာ လိပ်စာအသေးစိတ်",
+      opt_optional: "（မဖြည့်လည်းရ）",
+      opt_ifany: "（ရှိပါက）",
+      addr_pin_label: "တပ်ဆင်မည့်နေရာကို ပင်တွယ်ရန်",
+      addr_text_label: "လိပ်စာအပြည့်အစုံ ဖြည့်ရန်",
+      pin_btn: "လက်ရှိတည်နေရာကို အသုံးပြုရန်",
+      pin_searching: "တည်နေရာ ရှာဖွေနေသည်...",
+      pin_saved_prefix: "တည်နေရာ သိမ်းဆည်းပြီးပါပြီ — ",
+      pin_view_map: "မြေပုံတွင်ကြည့်ရန်",
+      pin_err_nogeoloc: "ဤစက်ပစ္စည်းသည် တည်နေရာပင်တွယ်ခြင်းကို ပံ့ပိုးမထားပါ။ \"လိပ်စာအပြည့်အစုံ ဖြည့်ရန်\" ကို ရွေးချယ်ပါ။",
+      pin_err_denied: "တည်နေရာကို ရယူ၍မရပါ။ တည်နေရာသုံးခွင့်ပြုပါ သို့မဟုတ် \"လိပ်စာအပြည့်အစုံ ဖြည့်ရန်\" ကို ရွေးချယ်ပါ။",
+      label_zip: "တပ်ဆင်မည့်နေရာ စာပို့သင်္ကေတ",
+      ph_zip: "ဥပမာ - 10110",
+      zip_row_sub: "တမ်ဘွန် (ရပ်ကွက်)",
+      zip_row_dist: "အန်ဖား (မြို့နယ်)",
+      zip_row_prov: "ပြည်နယ်/တိုင်း",
+      zip_select_placeholder: "မှန်ကန်သော တမ်ဘွန်ကို ရွေးချယ်ပါ",
+      zip_hint_multi: "ဤစာပို့သင်္ကေတတွင် နေရာများစွာ ပါဝင်ပါသည်။ အထက်မှ မှန်ကန်သော တမ်ဘွန်ကို ရွေးချယ်ပါ။",
+      zip_hint_notfound: "ဤစာပို့သင်္ကေတကို ရှာမတွေ့ပါ။ ပြန်လည်စစ်ဆေးပါ။",
+      label_house: "အိမ်အမှတ်",
+      ph_house: "ဥပမာ - 99/9",
+      label_village: "ရွာ/မူအမှတ်",
+      ph_village: "ဥပမာ - Sukjai ရွာ၊ မူ ၅",
+      label_road: "လမ်း/ဆွိုင်း",
+      ph_road: "ဥပမာ - Sukhumvit လမ်း ဆွိုင်း ၂၁",
+      consent_pre: "True မှ အထက်ပါအချက်အလက်များကို ပြန်ဆက်သွယ်ခြင်းနှင့် ကုန်ပစ္စည်းအကြံပြုခြင်းအတွက် စုဆောင်း၍ အသုံးပြုရန် ",
+      privacy_link: "ကိုယ်ရေးအချက်အလက်မူဝါဒ",
+      consent_post: " အရ သဘောတူပါသည်",
+      pdpa_err: "ပေးပို့မီ ကိုယ်ရေးအချက်အလက်မူဝါဒကို သဘောတူရန် လိုအပ်ပါသည်",
+      submit_label: "ပေးပို့ရန်",
+      sla_note: "*ဝန်ဆောင်မှုအချိန် ၀၇:၀၀–၂၀:၀၀ အတွင်း ဝန်ထမ်းမှ ၅ မိနစ်အတွင်း ပြန်ဆက်သွယ်ပါမည်။ ဝန်ဆောင်မှုအချိန်ပြင်ပတွင် နောက်ထပ်အချိန်ပိုင်း၌ ဆက်သွယ်ပါမည်။",
+      line_title: "ဝန်ထမ်းနှင့် စကားပြောရန်",
+      line_sub: "True ဝန်ထမ်းနှင့် LINE မှတစ်ဆင့် ယခုချက်ချင်းစကားပြောနိုင်ပါသည်",
+      line_card_p: "စကားပြောရန် အောက်ပါခလုတ်ကို နှိပ်ပါ။ ဝန်ဆောင်မှုအချိန်အတွင်း ၅ မိနစ်ဖြင့် ပြန်ကြားပါမည်။",
+      line_btn: "Line စကားပြောရန် နှိပ်ပါ",
+      success_h2: "ပေးပို့ခြင်း အောင်မြင်ပါသည်",
+      success_p: "သင်ရွေးချယ်သည့်အချိန်တွင် ဝန်ထမ်းမှ ပြန်လည်ဆက်သွယ်ပါမည်",
+      success_ref_label: "တောင်းဆိုမှုအမှတ်:",
+      success_again: "နောက်တစ်ကြိမ် ပေးပို့ရန်",
+      footer_pre: "True Corporation Public Company Limited သည် သင်ပေးထားသောအချက်အလက်များကို ပြန်ဆက်သွယ်ခြင်းနှင့် ကုန်ပစ္စည်းအကြံပြုခြင်းအတွက်သာ စုဆောင်း၍ အသုံးပြုပါသည်။ ဖတ်ရှုရန် "
+    }
+  };
+
+  var currentLang = 'th';
+
+  function applyLang(lang){
+    if(!I18N[lang]) lang = 'th';
+    currentLang = lang;
+    var dict = I18N[lang];
+
+    document.documentElement.lang = ({zh:'zh-CN', ja:'ja', ru:'ru', my:'my'})[lang] || lang;
+    document.getElementById('page-title').textContent = dict.page_title;
+    document.getElementById('page-desc').setAttribute('content', dict.page_desc);
+
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined){ el.textContent = dict[key]; }
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
+      var key = el.getAttribute('data-i18n-ph');
+      if(dict[key] !== undefined){ el.setAttribute('placeholder', dict[key]); }
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach(function(el){
+      var key = el.getAttribute('data-i18n-alt');
+      if(dict[key] !== undefined){ el.setAttribute('alt', dict[key]); }
+    });
+    document.querySelectorAll('[data-i18n-src]').forEach(function(el){
+      var key = el.getAttribute('data-i18n-src');
+      if(dict[key] !== undefined){ el.setAttribute('src', dict[key]); }
+    });
+
+    // dropdown ที่มีหลายพื้นที่ (ถ้ากำลังเปิดอยู่) ให้รีเฟรชข้อความตามภาษาใหม่
+    if(zipSelect && zipSelect.style.display === 'block' && currentZipMatches){
+      var keepIdx = zipSelect.value;
+      renderZipOptions(currentZipMatches);
+      zipSelect.value = keepIdx;
+      if(keepIdx === '' || keepIdx === undefined){
+        zipHint.textContent = dict.zip_hint_multi;
+      }
+    }
+    // ถ้ามีการเลือกพื้นที่ไว้แล้ว ให้แสดงผลใหม่ตามภาษา (ไทย vs อังกฤษ)
+    if(currentZipMatches && zipRows.classList.contains('show')){
+      var idx = (zipSelect.style.display === 'block') ? Number(zipSelect.value) : 0;
+      if(!isNaN(idx) && currentZipMatches[idx]){ applyZipChoice(currentZipMatches[idx]); }
+    }
+
+    try{ localStorage.setItem('tol_lang', lang); }catch(e){}
+    var sel = document.getElementById('lang-select');
+    if(sel) sel.value = lang;
+  }
+
+  document.getElementById('lang-select').addEventListener('change', function(){
+    applyLang(this.value);
+  });
 
   var sections = {
     callback: document.getElementById('section-callback'),
@@ -625,6 +1103,8 @@
   });
 
   // ---- postal code lookup ----
+  // หมายเหตุ: ทุกรายการใน ZIP_DATA เก็บเป็น [ตำบลไทย, อำเภอไทย, จังหวัดไทย, Subdistrict EN, District EN, Province EN]
+  // ภาษาไทย (th) แสดงชื่อไทย, ภาษาอื่นทั้งหมด (EN/ZH/JA/RU/MY) แสดงเป็นชื่อโรมัน/อังกฤษ
   var zipInput = document.getElementById('zipcode');
   var zipResult = document.getElementById('zip-result');
   var zipRows = document.getElementById('zip-rows');
@@ -634,6 +1114,29 @@
   var zipSelect = document.getElementById('zip-select');
   var zipHint = document.getElementById('zip-hint');
   var currentZipMatches = null;
+
+  function zipLabelFor(match){
+    // ไทย -> ใช้ชื่อไทย (index 0-2), ภาษาอื่นทั้งหมด -> ใช้ชื่อโรมัน/อังกฤษ (index 3-5)
+    return (currentLang === 'th') ? [match[0], match[1], match[2]] : [match[3], match[4], match[5]];
+  }
+
+  function renderZipOptions(matches){
+    var dict = I18N[currentLang];
+    zipSelect.innerHTML = '';
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = dict.zip_select_placeholder;
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    zipSelect.appendChild(placeholder);
+    matches.forEach(function(m, i){
+      var lbl = zipLabelFor(m);
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = lbl[0] + ' / ' + lbl[1] + ' / ' + lbl[2];
+      zipSelect.appendChild(opt);
+    });
+  }
 
   function resetZip(){
     zipResult.classList.remove('show');
@@ -646,9 +1149,10 @@
   }
 
   function applyZipChoice(match){
-    zipSub.textContent = match[0];
-    zipDist.textContent = match[1];
-    zipProv.textContent = match[2];
+    var lbl = zipLabelFor(match);
+    zipSub.textContent = lbl[0];
+    zipDist.textContent = lbl[1];
+    zipProv.textContent = lbl[2];
     zipRows.classList.add('show');
   }
 
@@ -660,9 +1164,10 @@
 
     var data = window.ZIP_DATA || {};
     var matches = data[z];
+    var dict = I18N[currentLang];
 
     if(!matches || !matches.length){
-      zipHint.textContent = 'ไม่พบข้อมูลรหัสไปรษณีย์นี้ กรุณาตรวจสอบอีกครั้ง';
+      zipHint.textContent = dict.zip_hint_notfound;
       zipHint.classList.add('notfound');
       return;
     }
@@ -676,20 +1181,8 @@
       // รหัสนี้มีหลายพื้นที่ — ให้ผู้ใช้เลือกเองก่อน ไม่ default ให้พื้นที่ใดพื้นที่หนึ่ง
       zipResult.classList.add('show');
       zipSelect.style.display = 'block';
-      zipSelect.innerHTML = '';
-      var placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'เลือกตำบล/แขวงที่ถูกต้อง';
-      placeholder.disabled = true;
-      placeholder.selected = true;
-      zipSelect.appendChild(placeholder);
-      matches.forEach(function(m, i){
-        var opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = m[0] + ' / ' + m[1] + ' / ' + m[2];
-        zipSelect.appendChild(opt);
-      });
-      zipHint.textContent = 'รหัสไปรษณีย์นี้มีหลายพื้นที่ กรุณาเลือกตำบล/แขวงที่ถูกต้องด้านบน';
+      renderZipOptions(matches);
+      zipHint.textContent = dict.zip_hint_multi;
     }
   });
 
@@ -725,24 +1218,25 @@
   });
 
   pinBtn.addEventListener('click', function(){
+    var dict = I18N[currentLang];
     if(!navigator.geolocation){
-      pinStatus.textContent = 'อุปกรณ์นี้ไม่รองรับการปักหมุดตำแหน่ง กรุณาเลือก "กรอกที่อยู่เต็ม" แทน';
+      pinStatus.textContent = dict.pin_err_nogeoloc;
       pinStatus.classList.add('show','error');
       return;
     }
     pinStatus.classList.remove('error');
-    pinStatus.textContent = 'กำลังค้นหาตำแหน่ง...';
+    pinStatus.textContent = dict.pin_searching;
     pinStatus.classList.add('show');
 
     navigator.geolocation.getCurrentPosition(
       function(pos){
         pinCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         var mapsUrl = 'https://maps.google.com/?q=' + pinCoords.lat + ',' + pinCoords.lng;
-        pinStatus.innerHTML = 'บันทึกตำแหน่งแล้ว — <a href="' + mapsUrl + '" target="_blank" rel="noopener">ดูบนแผนที่</a>';
+        pinStatus.innerHTML = dict.pin_saved_prefix + '<a href="' + mapsUrl + '" target="_blank" rel="noopener">' + dict.pin_view_map + '</a>';
         pinStatus.classList.remove('error');
       },
       function(){
-        pinStatus.textContent = 'ไม่สามารถเข้าถึงตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่ง หรือเลือก "กรอกที่อยู่เต็ม" แทน';
+        pinStatus.textContent = dict.pin_err_denied;
         pinStatus.classList.add('error');
       },
       { enableHighAccuracy:true, timeout:10000 }
@@ -791,13 +1285,13 @@
       return;
     }
 
-    var zipMatch = null;
+    var zipMatchTh = null; // เก็บชื่อไทยเสมอสำหรับส่งเข้าระบบหลังบ้าน (ทีมติดตั้งใช้ชื่อไทย)
     if(currentZipMatches){
       if(zipSelect.style.display === 'block'){
         // มีหลายพื้นที่: ใช้เฉพาะพื้นที่ที่ผู้ใช้เลือกจริงเท่านั้น ไม่ default เป็นตัวแรก
-        if(zipSelect.value !== ''){ zipMatch = currentZipMatches[Number(zipSelect.value)]; }
+        if(zipSelect.value !== ''){ zipMatchTh = currentZipMatches[Number(zipSelect.value)]; }
       } else {
-        zipMatch = currentZipMatches[0];
+        zipMatchTh = currentZipMatches[0];
       }
     }
 
@@ -809,9 +1303,12 @@
       phone: document.getElementById('phone').value.trim(),
       callback_time: form.querySelector('input[name="callback_time"]:checked').value,
       zipcode: zipInput.value || null,
-      subdistrict: zipMatch ? zipMatch[0] : null,
-      district: zipMatch ? zipMatch[1] : null,
-      province: zipMatch ? zipMatch[2] : null,
+      subdistrict: zipMatchTh ? zipMatchTh[0] : null,
+      district: zipMatchTh ? zipMatchTh[1] : null,
+      province: zipMatchTh ? zipMatchTh[2] : null,
+      subdistrict_en: zipMatchTh ? zipMatchTh[3] : null,
+      district_en: zipMatchTh ? zipMatchTh[4] : null,
+      province_en: zipMatchTh ? zipMatchTh[5] : null,
       address_method: addrMethod,
       house_no: addrMethod === 'text' ? document.getElementById('house-no').value.trim() : null,
       village: addrMethod === 'text' ? document.getElementById('village').value.trim() : null,
@@ -819,6 +1316,7 @@
       pin_lat: addrMethod === 'pin' && pinCoords ? pinCoords.lat : null,
       pin_lng: addrMethod === 'pin' && pinCoords ? pinCoords.lng : null,
       pdpa_consent: true,
+      lang: currentLang,
       source: 'true_app_splash_banner',
       submitted_at: new Date().toISOString(),
       ref: genRef()
@@ -845,6 +1343,13 @@
       submitBtn.disabled = false;
     });
   });
+
+  document.getElementById('line-cta').href = CONFIG.LINE_OA_URL;
+
+  // ---- เริ่มต้นภาษา: จำค่าที่เลือกไว้ก่อนหน้า (ถ้ามี) ไม่งั้นใช้ไทยเป็นค่าเริ่มต้น ----
+  var savedLang = 'th';
+  try{ savedLang = localStorage.getItem('tol_lang') || 'th'; }catch(e){}
+  applyLang(savedLang);
 
 })();
 </script>
