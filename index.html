@@ -210,6 +210,8 @@
     padding:10px 12px;display:none;
   }
   .zip-result.show{display:block;}
+  .zip-rows{display:none;}
+  .zip-rows.show{display:block;}
   .zip-result .row{display:flex;justify-content:space-between;gap:8px;color:var(--ink-soft);}
   .zip-result .row b{color:var(--navy);font-weight:600;}
   .zip-result select{
@@ -475,9 +477,11 @@
               <label for="zipcode">รหัสไปรษณีย์พื้นที่ติดตั้ง <span class="opt">(ไม่บังคับ)</span></label>
               <input type="tel" id="zipcode" name="zipcode" inputmode="numeric" placeholder="เช่น 10110" maxlength="5">
               <div class="zip-result" id="zip-result">
-                <div class="row"><span>ตำบล/แขวง</span><b id="zip-sub">—</b></div>
-                <div class="row"><span>อำเภอ/เขต</span><b id="zip-dist">—</b></div>
-                <div class="row"><span>จังหวัด</span><b id="zip-prov">—</b></div>
+                <div class="zip-rows" id="zip-rows">
+                  <div class="row"><span>ตำบล/แขวง</span><b id="zip-sub">—</b></div>
+                  <div class="row"><span>อำเภอ/เขต</span><b id="zip-dist">—</b></div>
+                  <div class="row"><span>จังหวัด</span><b id="zip-prov">—</b></div>
+                </div>
                 <select id="zip-select" style="display:none;"></select>
               </div>
               <p class="zip-hint" id="zip-hint"></p>
@@ -623,6 +627,7 @@
   // ---- postal code lookup ----
   var zipInput = document.getElementById('zipcode');
   var zipResult = document.getElementById('zip-result');
+  var zipRows = document.getElementById('zip-rows');
   var zipSub = document.getElementById('zip-sub');
   var zipDist = document.getElementById('zip-dist');
   var zipProv = document.getElementById('zip-prov');
@@ -632,6 +637,7 @@
 
   function resetZip(){
     zipResult.classList.remove('show');
+    zipRows.classList.remove('show');
     zipSelect.style.display = 'none';
     zipSelect.innerHTML = '';
     zipHint.textContent = '';
@@ -643,6 +649,7 @@
     zipSub.textContent = match[0];
     zipDist.textContent = match[1];
     zipProv.textContent = match[2];
+    zipRows.classList.add('show');
   }
 
   zipInput.addEventListener('input', function(){
@@ -666,21 +673,31 @@
       applyZipChoice(matches[0]);
       zipResult.classList.add('show');
     } else {
+      // รหัสนี้มีหลายพื้นที่ — ให้ผู้ใช้เลือกเองก่อน ไม่ default ให้พื้นที่ใดพื้นที่หนึ่ง
+      zipResult.classList.add('show');
       zipSelect.style.display = 'block';
+      zipSelect.innerHTML = '';
+      var placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'เลือกตำบล/แขวงที่ถูกต้อง';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      zipSelect.appendChild(placeholder);
       matches.forEach(function(m, i){
         var opt = document.createElement('option');
         opt.value = i;
         opt.textContent = m[0] + ' / ' + m[1] + ' / ' + m[2];
         zipSelect.appendChild(opt);
       });
-      applyZipChoice(matches[0]);
-      zipResult.classList.add('show');
-      zipHint.textContent = 'พบหลายพื้นที่ในรหัสนี้ กรุณาเลือกตำบล/แขวงที่ถูกต้อง';
+      zipHint.textContent = 'รหัสไปรษณีย์นี้มีหลายพื้นที่ กรุณาเลือกตำบล/แขวงที่ถูกต้องด้านบน';
     }
   });
 
   zipSelect.addEventListener('change', function(){
-    if(currentZipMatches){ applyZipChoice(currentZipMatches[zipSelect.value]); }
+    if(currentZipMatches && zipSelect.value !== ''){
+      applyZipChoice(currentZipMatches[zipSelect.value]);
+      zipHint.textContent = '';
+    }
   });
 
   // ---- address method: pin vs full text ----
@@ -776,8 +793,12 @@
 
     var zipMatch = null;
     if(currentZipMatches){
-      var idx = zipSelect.style.display === 'block' ? Number(zipSelect.value) : 0;
-      zipMatch = currentZipMatches[idx];
+      if(zipSelect.style.display === 'block'){
+        // มีหลายพื้นที่: ใช้เฉพาะพื้นที่ที่ผู้ใช้เลือกจริงเท่านั้น ไม่ default เป็นตัวแรก
+        if(zipSelect.value !== ''){ zipMatch = currentZipMatches[Number(zipSelect.value)]; }
+      } else {
+        zipMatch = currentZipMatches[0];
+      }
     }
 
     var addrMethod = form.querySelector('input[name="addr_method"]:checked');
