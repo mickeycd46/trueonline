@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สมัครเน็ตบ้านทรู | True</title>
+<meta name="description" content="กรอกข้อมูลให้เจ้าหน้าที่ True ติดต่อกลับ หรือแชทกับเจ้าหน้าที่ทันที">
+
+<!--
+  ============================================================
+  True App x TOL — Drop Lead Landing Page (rev.2)
+  ------------------------------------------------------------
+  ไฟล์ที่ต้องวางไว้ด้วยกัน (โครงสร้างโฟลเดอร์):
+    /index.html
+    /fonts/BetterTogether-Regular.woff2
+    /fonts/BetterTogether-Medium.woff2
+    /fonts/BetterTogether-Bold.woff2
+    /fonts/BetterTogether-Light.woff2
+    /assets/hero-banner.png
+    /assets/zip-data.js   (ฐานข้อมูลรหัสไปรษณีย์ทั้งประเทศ สำหรับ filter ที่อยู่)
+
+  ต้องแก้ก่อนขึ้นระบบจริง (search "TODO"):
+  1) CONFIG.SUBMIT_ENDPOINT → URL ของ Apps Script / Cloud Run ที่รับข้อมูล (Path A)
+  2) CONFIG.LINE_OA_URL     → ลิงก์ Line OA สำหรับแชทกับเจ้าหน้าที่ (Path B)
+  ============================================================
+-->
+
+<style>
+  @font-face{
+    font-family:'Better Together';
+    src:url('./fonts/BetterTogether-Light.woff2') format('woff2');
+    font-weight:300; font-display:swap;
+  }
+  @font-face{
+    font-family:'Better Together';
+    src:url('./fonts/BetterTogether-Regular.woff2') format('woff2');
+    font-weight:400; font-display:swap;
+  }
+  @font-face{
+    font-family:'Better Together';
+    src:url('./fonts/BetterTogether-Medium.woff2') format('woff2');
+    font-weight:500; font-display:swap;
+  }
+  @font-face{
+    font-family:'Better Together';
+    src:url('./fonts/BetterTogether-Bold.woff2') format('woff2');
+    font-weight:700; font-display:swap;
+  }
+
+  :root{
+    --navy:#000F3C;
+    --red:#EC2127;
+    --blue:#2D28CD;
+    --magenta:#B3207A;
+    --purple:#6F60A9;
+    --cyan:#00C8FF;
+    --ink:#101828;
+    --ink-soft:#4B5468;
+    --line:#E4E7F0;
+    --bg:#FFFFFF;
+    --bg-soft:#F6F7FB;
+    --ok:#12805C;
+    --radius:14px;
+    --shadow:0 8px 24px rgba(16,20,60,.08);
+    --font:'Better Together','Noto Sans Thai','Inter','Tahoma',sans-serif;
+    /* dimmed True red→blue wash, used sparingly on 3 surfaces only */
+    --wash: linear-gradient(180deg,
+              #ffffff 0%,
+              rgba(236,33,39,.05) 22%,
+              rgba(179,32,122,.05) 45%,
+              rgba(111,96,169,.05) 65%,
+              rgba(0,200,255,.06) 100%);
+    --wash-card: linear-gradient(160deg,
+              rgba(236,33,39,.07) 0%,
+              rgba(255,255,255,.98) 42%,
+              rgba(0,200,255,.08) 100%);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:70px;}
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--ink);
+    background:var(--wash);
+    -webkit-font-smoothing:antialiased;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  img,svg{max-width:100%;display:block;}
+  .wrap{max-width:520px;margin:0 auto;padding:0 20px;}
+  a{color:inherit;}
+
+  .brand-thread{
+    height:4px;
+    background:linear-gradient(90deg,var(--red),var(--magenta),var(--purple),var(--blue),var(--cyan));
+  }
+
+  header{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(120deg, rgba(255,255,255,.9), rgba(253,234,235,.85) 50%, rgba(232,246,255,.88) 100%);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  header .row{
+    max-width:520px;margin:0 auto;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo{display:flex;align-items:center;gap:8px;}
+  .logo svg{height:22px;width:auto;}
+  .call-chip{
+    font-size:13px;font-weight:600;color:var(--navy);
+    display:flex;align-items:center;gap:6px;
+    text-decoration:none;
+  }
+  .call-chip svg{width:15px;height:15px;}
+
+  main{padding-bottom:56px;}
+
+  /* HERO */
+  .hero{padding:28px 0 26px;}
+  h1{
+    font-size:26px;line-height:1.32;font-weight:700;
+    color:var(--red);margin:0 0 10px;
+    text-align:center;
+  }
+  .hero p.lede{
+    font-size:15px;line-height:1.6;color:var(--ink-soft);
+    margin:0 0 20px;text-align:center;
+  }
+  .hero-banner{
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .hero-banner img{width:100%;height:auto;display:block;}
+
+  /* PATH CHOICE */
+  section.choice{padding:30px 0 6px;}
+  .section-title{
+    font-size:19px;font-weight:700;color:var(--navy);margin:0 0 4px;
+  }
+  .section-sub{
+    font-size:13.5px;color:var(--ink-soft);margin:0 0 18px;
+  }
+  .choice-grid{display:grid;gap:12px;}
+  .choice-card{
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;display:flex;gap:14px;align-items:flex-start;
+    background:#fff;cursor:pointer;text-align:left;width:100%;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .choice-card:hover{border-color:var(--red);box-shadow:var(--shadow);}
+  .choice-card .icon{
+    flex:none;width:42px;height:42px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--bg-soft);
+  }
+  .choice-card .icon svg{width:22px;height:22px;}
+  .choice-card .icon.red{background:#FDEAEB;}
+  .choice-card .icon.blue{background:#EAEAFB;}
+  .choice-card .icon.red svg{color:var(--red);}
+  .choice-card .icon.blue svg{color:var(--blue);}
+  .choice-card .txt strong{display:block;font-size:15.5px;font-weight:700;color:var(--navy);margin-bottom:3px;}
+  .choice-card .txt span{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .choice-card .chev{margin-left:auto;flex:none;color:#B7BCD1;align-self:center;}
+
+  /* FORM */
+  section.form-section{
+    padding:26px 0 10px;
+    display:none;
+  }
+  section.form-section.open{display:block;}
+  .form-card{
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;background:var(--wash-card);
+  }
+  .field{margin-bottom:16px;}
+  .field:last-of-type{margin-bottom:0;}
+  label{
+    display:block;font-size:13.5px;font-weight:600;color:var(--navy);
+    margin-bottom:7px;
+  }
+  label .opt{font-weight:400;color:var(--ink-soft);}
+  input[type=text], input[type=tel]{
+    width:100%;font-family:inherit;font-size:15.5px;color:var(--ink);
+    padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+    background:#fff;outline:none;
+  }
+  input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(45,40,205,.12);}
+  .time-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .time-opt{position:relative;}
+  .time-opt input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0;}
+  .time-opt span{
+    display:block;text-align:center;font-size:13.5px;font-weight:500;
+    padding:11px 6px;border:1px solid var(--line);border-radius:10px;
+    background:#fff;color:var(--ink);
+  }
+  .time-opt input:checked + span{
+    border-color:var(--red);background:#FDEAEB;color:var(--red);font-weight:700;
+  }
+  .err{font-size:12.5px;color:var(--red);margin-top:6px;display:none;}
+  .field.invalid input{border-color:var(--red);}
+  .field.invalid .err{display:block;}
+
+  /* postal code lookup */
+  .zip-result{
+    margin-top:9px;font-size:13px;line-height:1.6;
+    background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;display:none;
+  }
+  .zip-result.show{display:block;}
+  .zip-result .row{display:flex;justify-content:space-between;gap:8px;color:var(--ink-soft);}
+  .zip-result .row b{color:var(--navy);font-weight:600;}
+  .zip-result select{
+    width:100%;margin-top:6px;font-family:inherit;font-size:13.5px;
+    padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);
+  }
+  .zip-hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
+  .zip-hint.notfound{color:var(--red);}
+
+  .consent{
+    display:flex;gap:10px;align-items:flex-start;
+    background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:13px 14px;margin-top:18px;
+  }
+  .consent input{margin-top:3px;flex:none;width:17px;height:17px;accent-color:var(--red);}
+  .consent p{margin:0;font-size:12.5px;line-height:1.55;color:var(--ink-soft);}
+  .consent a{color:var(--blue);font-weight:600;text-decoration:underline;}
+
+  .submit-btn{
+    width:100%;margin-top:18px;
+    background:var(--red);color:#fff;font-weight:700;font-size:16px;
+    padding:15px;border:none;border-radius:999px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .submit-btn[disabled]{opacity:.55;cursor:not-allowed;}
+  .spinner{
+    width:16px;height:16px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.5);border-top-color:#fff;
+    animation:spin .7s linear infinite;display:none;
+  }
+  .submit-btn.loading .spinner{display:inline-block;}
+  .submit-btn.loading .btn-label{opacity:.85;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .sla-note{
+    display:flex;gap:8px;align-items:flex-start;
+    font-size:12.5px;color:var(--ink-soft);margin-top:12px;line-height:1.5;
+  }
+  .sla-note svg{width:15px;height:15px;flex:none;margin-top:1px;color:var(--ok);}
+
+  .line-card{
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 20px;text-align:center;background:var(--bg-soft);
+  }
+  .line-card svg{width:38px;height:38px;margin:0 auto 10px;color:#06C755;}
+  .line-card h3{margin:0 0 6px;font-size:16px;color:var(--navy);}
+  .line-card p{margin:0 0 18px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;}
+  .line-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#06C755;color:#fff;font-weight:700;font-size:15px;
+    padding:13px 26px;border-radius:999px;text-decoration:none;
+  }
+
+  .back-link{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:13px;font-weight:600;color:var(--ink-soft);
+    margin-bottom:14px;background:none;border:none;padding:0;cursor:pointer;
+  }
+
+  .success{display:none;text-align:center;padding:44px 0 8px;}
+  .success.open{display:block;}
+  .success .check{
+    width:56px;height:56px;border-radius:50%;
+    background:#E8F6F0;color:var(--ok);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
+  }
+  .success .check svg{width:28px;height:28px;}
+  .success h2{font-size:19px;color:var(--navy);margin:0 0 8px;}
+  .success p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 auto 20px;max-width:340px;}
+  .success .ref{
+    display:inline-block;font-size:12.5px;color:var(--ink-soft);
+    background:var(--bg-soft);border:1px solid var(--line);
+    padding:8px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .success .again{
+    font-size:13.5px;font-weight:600;color:var(--blue);
+    background:none;border:none;cursor:pointer;text-decoration:underline;
+  }
+
+  footer{
+    border-top:1px solid var(--line);padding:22px 0 32px;margin-top:10px;
+  }
+  footer p{font-size:11.5px;color:#8A90A6;line-height:1.6;margin:0 0 6px;}
+  footer a{color:#8A90A6;text-decoration:underline;}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .spinner{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="brand-thread"></div>
+
+<header>
+  <div class="row">
+    <div class="logo" aria-label="True">
+      <svg viewBox="0 0 100 34" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <text x="0" y="26" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="28" fill="#EC2127">true</text>
+      </svg>
+    </div>
+    <a class="call-chip" href="tel:1242">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      1242
+    </a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <h1>สมัครเน็ตบ้านทรู ให้เจ้าหน้าที่ติดต่อกลับ</h1>
+      <p class="lede">กรอกข้อมูลไม่ถึง 1 นาที เจ้าหน้าที่ True ติดต่อกลับเพื่อแนะนำแพ็กเกจที่เหมาะกับบ้านคุณ ไม่มีค่าใช้จ่ายในการสอบถาม</p>
+
+      <div class="hero-banner">
+        <img src="./assets/hero-banner.png" alt="โปรโมชันเน็ตบ้านทรู 500/500 Mbps เพียง 499 บาท/เดือน" width="1920" height="618">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PATH CHOICE ============ -->
+  <section class="choice" id="choose">
+    <div class="wrap">
+      <p class="section-title">เลือกวิธีติดต่อที่สะดวก</p>
+      <p class="section-sub">เลือกได้ทั้งให้เจ้าหน้าที่โทรกลับ หรือแชทคุยกับเจ้าหน้าที่ทันที</p>
+
+      <div class="choice-grid">
+        <button type="button" class="choice-card" id="pick-callback">
+          <span class="icon red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          <span class="txt">
+            <strong>ให้เจ้าหน้าที่โทรกลับ</strong>
+            <span>กรอกชื่อและเบอร์โทร เลือกช่วงเวลาที่สะดวก</span>
+          </span>
+          <span class="chev">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </button>
+
+        <button type="button" class="choice-card" id="pick-line">
+          <span class="icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          <span class="txt">
+            <strong>แชทกับเจ้าหน้าที่ทันที</strong>
+            <span>คุยผ่าน LINE เจ้าหน้าที่ตอบกลับภายใน 5 นาที</span>
+          </span>
+          <span class="chev">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PATH A: CALLBACK FORM ============ -->
+  <section class="form-section" id="section-callback">
+    <div class="wrap">
+      <button type="button" class="back-link" data-back>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        กลับ
+      </button>
+
+      <p class="section-title">ให้เจ้าหน้าที่โทรกลับ</p>
+      <p class="section-sub">กรอกข้อมูลด้านล่าง เจ้าหน้าที่จะติดต่อกลับตามช่วงเวลาที่เลือก</p>
+
+      <form class="form-card" id="lead-form" novalidate>
+
+        <div class="field" id="field-name">
+          <label for="name">ชื่อ-นามสกุล</label>
+          <input type="text" id="name" name="name" autocomplete="name" placeholder="เช่น สมชาย ใจดี">
+          <p class="err">กรุณากรอกชื่อ-นามสกุล</p>
+        </div>
+
+        <div class="field" id="field-phone">
+          <label for="phone">เบอร์โทรติดต่อกลับ</label>
+          <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel" placeholder="08X-XXX-XXXX" maxlength="10">
+          <p class="err">กรุณากรอกเบอร์โทร 10 หลักให้ถูกต้อง</p>
+        </div>
+
+        <div class="field" id="field-time">
+          <label>ช่วงเวลาที่สะดวกให้ติดต่อกลับ</label>
+          <div class="time-grid">
+            <label class="time-opt"><input type="radio" name="callback_time" value="asap"><span>เร็วที่สุด</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="morning"><span>09:00–12:00</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="afternoon"><span>12:00–16:00</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="evening"><span>16:00–20:00</span></label>
+          </div>
+          <p class="err">กรุณาเลือกช่วงเวลาที่สะดวก</p>
+        </div>
+
+        <div class="field" id="field-zip">
+          <label for="zipcode">รหัสไปรษณีย์พื้นที่ติดตั้ง <span class="opt">(ไม่บังคับ)</span></label>
+          <input type="tel" id="zipcode" name="zipcode" inputmode="numeric" placeholder="เช่น 10110" maxlength="5">
+          <div class="zip-result" id="zip-result">
+            <div class="row"><span>ตำบล/แขวง</span><b id="zip-sub">—</b></div>
+            <div class="row"><span>อำเภอ/เขต</span><b id="zip-dist">—</b></div>
+            <div class="row"><span>จังหวัด</span><b id="zip-prov">—</b></div>
+            <select id="zip-select" style="display:none;"></select>
+          </div>
+          <p class="zip-hint" id="zip-hint"></p>
+        </div>
+
+        <div class="consent">
+          <input type="checkbox" id="pdpa" name="pdpa">
+          <p>
+            ข้าพเจ้ายินยอมให้ True เก็บรวบรวมและใช้ข้อมูลข้างต้นเพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์ ตาม
+            <a href="https://www.true.th/home/privacy-policy" target="_blank" rel="noopener">นโยบายความเป็นส่วนตัว</a> ของบริษัท
+          </p>
+        </div>
+        <p class="err" id="pdpa-err" style="display:none;">กรุณายอมรับนโยบายความเป็นส่วนตัวก่อนส่งข้อมูล</p>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span class="spinner"></span>
+          <span class="btn-label">ส่งข้อมูล</span>
+        </button>
+
+        <div class="sla-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 07:00–20:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ PATH B: LINE CHAT ============ -->
+  <section class="form-section" id="section-line">
+    <div class="wrap">
+      <button type="button" class="back-link" data-back>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        กลับ
+      </button>
+
+      <p class="section-title">แชทกับเจ้าหน้าที่</p>
+      <p class="section-sub">คุยกับเจ้าหน้าที่ True ผ่าน LINE ได้ทันที</p>
+
+      <div class="line-card">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 5.9 2 10.7c0 4.3 3.6 7.9 8.4 8.6.3.1.8.2.9.5.1.3.1.7 0 1l-.2 1.3c0 .3-.2 1.1.9.6 1.2-.5 6.4-3.8 8.7-6.5C22.1 14.5 22 12.6 22 10.7 22 5.9 17.5 2 12 2z"/></svg>
+        <h3>LINE Official Account: True</h3>
+        <p>แตะปุ่มด้านล่างเพื่อเปิดแชท เจ้าหน้าที่ตอบกลับภายใน 5 นาทีในเวลาทำการ</p>
+        <!-- TODO: แทน # ด้วยลิงก์ LINE OA จริง เช่น https://line.me/R/ti/p/@yourlineid -->
+        <a class="line-btn" id="line-cta" href="#" target="_blank" rel="noopener">
+          คลิก! เปิดแชท Line
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUCCESS ============ -->
+  <section class="success" id="section-success">
+    <div class="wrap">
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="color:var(--navy);text-align:left;">ส่งข้อมูลเรียบร้อย</h2>
+      <p>เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้ กรุณาเปิดรับสายจากหมายเลขของบริษัท</p>
+      <div class="ref">เลขที่คำขอ: <span id="ref-no">—</span></div>
+      <br>
+      <button type="button" class="again" id="new-request">ส่งคำขออีกครั้ง</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>บริษัท ทรู คอร์ปอเรชั่น จำกัด (มหาชน) เก็บและใช้ข้อมูลที่ท่านให้ไว้เพื่อติดต่อกลับและนำเสนอผลิตภัณฑ์เท่านั้น อ่าน<a href="https://www.true.th/home/privacy-policy" target="_blank" rel="noopener">นโยบายความเป็นส่วนตัว</a></p>
+    <p>© True Corporation Public Company Limited</p>
+  </div>
+</footer>
+
+<script src="./assets/zip-data.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  // ===================== CONFIG — แก้ 2 ค่านี้ก่อนใช้งานจริง =====================
+  var CONFIG = {
+    // TODO: URL ของ Apps Script Web App / Cloud Run endpoint ที่รับข้อมูล lead (เก็บลง Sheet/BigQuery + ยิง LINE Notify)
+    SUBMIT_ENDPOINT: "https://script.google.com/macros/s/REPLACE_ME/exec",
+    // TODO: ลิงก์ LINE OA จริง
+    LINE_OA_URL: "https://line.me/R/ti/p/@REPLACE_ME"
+  };
+  // ================================================================================
+
+  document.getElementById('line-cta').href = CONFIG.LINE_OA_URL;
+
+  var sections = {
+    callback: document.getElementById('section-callback'),
+    line: document.getElementById('section-line'),
+    success: document.getElementById('section-success')
+  };
+
+  function showOnly(key){
+    ['callback','line','success'].forEach(function(k){
+      sections[k].classList.toggle('open', k === key);
+    });
+    if(key === 'callback' || key === 'line'){
+      sections[key].scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  document.getElementById('pick-callback').addEventListener('click', function(){ showOnly('callback'); });
+  document.getElementById('pick-line').addEventListener('click', function(){ showOnly('line'); });
+  document.querySelectorAll('[data-back]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      sections.callback.classList.remove('open');
+      sections.line.classList.remove('open');
+      document.getElementById('choose').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+  document.getElementById('new-request').addEventListener('click', function(){
+    document.getElementById('lead-form').reset();
+    resetZip();
+    sections.success.classList.remove('open');
+    document.getElementById('choose').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  // ---- postal code lookup ----
+  var zipInput = document.getElementById('zipcode');
+  var zipResult = document.getElementById('zip-result');
+  var zipSub = document.getElementById('zip-sub');
+  var zipDist = document.getElementById('zip-dist');
+  var zipProv = document.getElementById('zip-prov');
+  var zipSelect = document.getElementById('zip-select');
+  var zipHint = document.getElementById('zip-hint');
+  var currentZipMatches = null;
+
+  function resetZip(){
+    zipResult.classList.remove('show');
+    zipSelect.style.display = 'none';
+    zipSelect.innerHTML = '';
+    zipHint.textContent = '';
+    zipHint.classList.remove('notfound');
+    currentZipMatches = null;
+  }
+
+  function applyZipChoice(match){
+    zipSub.textContent = match[0];
+    zipDist.textContent = match[1];
+    zipProv.textContent = match[2];
+  }
+
+  zipInput.addEventListener('input', function(){
+    zipInput.value = zipInput.value.replace(/\D/g,'').slice(0,5);
+    var z = zipInput.value;
+    resetZip();
+    if(z.length !== 5) return;
+
+    var data = window.ZIP_DATA || {};
+    var matches = data[z];
+
+    if(!matches || !matches.length){
+      zipHint.textContent = 'ไม่พบข้อมูลรหัสไปรษณีย์นี้ กรุณาตรวจสอบอีกครั้ง';
+      zipHint.classList.add('notfound');
+      return;
+    }
+
+    currentZipMatches = matches;
+
+    if(matches.length === 1){
+      applyZipChoice(matches[0]);
+      zipResult.classList.add('show');
+    } else {
+      // หลายตำบลใช้รหัสไปรษณีย์เดียวกัน ให้ผู้ใช้เลือก
+      zipSelect.style.display = 'block';
+      matches.forEach(function(m, i){
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = m[0] + ' / ' + m[1] + ' / ' + m[2];
+        zipSelect.appendChild(opt);
+      });
+      applyZipChoice(matches[0]);
+      zipResult.classList.add('show');
+      zipHint.textContent = 'พบหลายพื้นที่ในรหัสนี้ กรุณาเลือกตำบล/แขวงที่ถูกต้อง';
+    }
+  });
+
+  zipSelect.addEventListener('change', function(){
+    if(currentZipMatches){ applyZipChoice(currentZipMatches[zipSelect.value]); }
+  });
+
+  // ---- form validation + submit ----
+  var form = document.getElementById('lead-form');
+  var submitBtn = document.getElementById('submit-btn');
+
+  function setInvalid(fieldId, invalid){
+    document.getElementById(fieldId).classList.toggle('invalid', invalid);
+  }
+
+  function validate(){
+    var ok = true;
+    var name = document.getElementById('name').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var timeChosen = form.querySelector('input[name="callback_time"]:checked');
+    var pdpa = document.getElementById('pdpa').checked;
+    var pdpaErr = document.getElementById('pdpa-err');
+
+    if(!name){ setInvalid('field-name', true); ok = false; } else { setInvalid('field-name', false); }
+
+    var phoneOk = /^0[0-9]{9}$/.test(phone.replace(/[\s-]/g,''));
+    if(!phoneOk){ setInvalid('field-phone', true); ok = false; } else { setInvalid('field-phone', false); }
+
+    if(!timeChosen){ setInvalid('field-time', true); ok = false; } else { setInvalid('field-time', false); }
+
+    if(!pdpa){ pdpaErr.style.display = 'block'; ok = false; } else { pdpaErr.style.display = 'none'; }
+
+    return ok;
+  }
+
+  function genRef(){
+    var d = new Date();
+    var pad = function(n){ return String(n).padStart(2,'0'); };
+    return 'TOL' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '-' + Math.floor(1000 + Math.random()*9000);
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!validate()){
+      var firstInvalid = form.querySelector('.invalid, #pdpa-err[style*="block"]');
+      if(firstInvalid){ firstInvalid.scrollIntoView({behavior:'smooth', block:'center'}); }
+      return;
+    }
+
+    var zipMatch = null;
+    if(currentZipMatches){
+      var idx = zipSelect.style.display === 'block' ? Number(zipSelect.value) : 0;
+      zipMatch = currentZipMatches[idx];
+    }
+
+    var payload = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      callback_time: form.querySelector('input[name="callback_time"]:checked').value,
+      zipcode: zipInput.value || null,
+      subdistrict: zipMatch ? zipMatch[0] : null,
+      district: zipMatch ? zipMatch[1] : null,
+      province: zipMatch ? zipMatch[2] : null,
+      pdpa_consent: true,
+      source: 'true_app_splash_banner',
+      submitted_at: new Date().toISOString(),
+      ref: genRef()
+    };
+
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+
+    fetch(CONFIG.SUBMIT_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain;charset=utf-8'}, // text/plain หลีกเลี่ยง CORS preflight กับ Apps Script
+      body: JSON.stringify(payload)
+    })
+    .then(function(){
+      document.getElementById('ref-no').textContent = payload.ref;
+      showOnly('success');
+    })
+    .catch(function(){
+      document.getElementById('ref-no').textContent = payload.ref;
+      showOnly('success');
+    })
+    .finally(function(){
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
