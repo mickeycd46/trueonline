@@ -8,20 +8,25 @@
 
 <!--
   ============================================================
-  True App x TOL — Drop Lead Landing Page (rev.2)
+  True App x TOL — Drop Lead Landing Page (rev.3)
   ------------------------------------------------------------
-  ไฟล์ที่ต้องวางไว้ด้วยกัน (โครงสร้างโฟลเดอร์):
+  ไฟล์ที่ต้องวางไว้ด้วยกัน (โครงสร้างโฟลเดอร์ — วางไว้ที่ root ของ repo ห้ามซ้อนโฟลเดอร์):
     /index.html
     /fonts/BetterTogether-Regular.woff2
     /fonts/BetterTogether-Medium.woff2
     /fonts/BetterTogether-Bold.woff2
     /fonts/BetterTogether-Light.woff2
     /assets/hero-banner.png
-    /assets/zip-data.js   (ฐานข้อมูลรหัสไปรษณีย์ทั้งประเทศ สำหรับ filter ที่อยู่)
+    /assets/zip-data.js
 
   ต้องแก้ก่อนขึ้นระบบจริง (search "TODO"):
   1) CONFIG.SUBMIT_ENDPOINT → URL ของ Apps Script / Cloud Run ที่รับข้อมูล (Path A)
   2) CONFIG.LINE_OA_URL     → ลิงก์ Line OA สำหรับแชทกับเจ้าหน้าที่ (Path B)
+
+  rev.3 เปลี่ยนจาก rev.2:
+  - เอา gradient wash (background/header/form-card) ออก กลับไปใช้สีพื้นเรียบแบบเวอร์ชันแรก
+  - แก้ font: เพิ่ม font-family:inherit ให้ button/input/select/textarea (ปุ่มไม่ inherit ฟอนต์จาก body โดย default)
+  - ที่อยู่ติดตั้ง: ให้เลือกก่อนว่าจะ "ปักหมุดสถานที่ติดตั้ง" (GPS) หรือ "กรอกที่อยู่เต็ม" (บ้านเลขที่/หมู่บ้าน/ถนน)
   ============================================================
 -->
 
@@ -63,17 +68,6 @@
     --radius:14px;
     --shadow:0 8px 24px rgba(16,20,60,.08);
     --font:'Better Together','Noto Sans Thai','Inter','Tahoma',sans-serif;
-    /* dimmed True red→blue wash, used sparingly on 3 surfaces only */
-    --wash: linear-gradient(180deg,
-              #ffffff 0%,
-              rgba(236,33,39,.05) 22%,
-              rgba(179,32,122,.05) 45%,
-              rgba(111,96,169,.05) 65%,
-              rgba(0,200,255,.06) 100%);
-    --wash-card: linear-gradient(160deg,
-              rgba(236,33,39,.07) 0%,
-              rgba(255,255,255,.98) 42%,
-              rgba(0,200,255,.08) 100%);
   }
 
   *{box-sizing:border-box;}
@@ -82,10 +76,14 @@
     margin:0;
     font-family:var(--font);
     color:var(--ink);
-    background:var(--wash);
+    background:var(--bg);
     -webkit-font-smoothing:antialiased;
     padding-top:env(safe-area-inset-top,0px);
     padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  /* form controls do not inherit font-family from the page by default in most browsers — force it */
+  button, input, select, textarea{
+    font-family:inherit;
   }
   img,svg{max-width:100%;display:block;}
   .wrap{max-width:520px;margin:0 auto;padding:0 20px;}
@@ -98,7 +96,7 @@
 
   header{
     position:sticky; top:0; z-index:20;
-    background:linear-gradient(120deg, rgba(255,255,255,.9), rgba(253,234,235,.85) 50%, rgba(232,246,255,.88) 100%);
+    background:rgba(255,255,255,.92);
     backdrop-filter:saturate(180%) blur(8px);
     border-bottom:1px solid var(--line);
   }
@@ -145,6 +143,7 @@
   }
   .choice-grid{display:grid;gap:12px;}
   .choice-card{
+    font-family:var(--font);
     border:1px solid var(--line);border-radius:var(--radius);
     padding:16px;display:flex;gap:14px;align-items:flex-start;
     background:#fff;cursor:pointer;text-align:left;width:100%;
@@ -173,7 +172,7 @@
   section.form-section.open{display:block;}
   .form-card{
     border:1px solid var(--line);border-radius:var(--radius);
-    padding:20px;background:var(--wash-card);
+    padding:20px;background:var(--bg-soft);
   }
   .field{margin-bottom:16px;}
   .field:last-of-type{margin-bottom:0;}
@@ -183,7 +182,7 @@
   }
   label .opt{font-weight:400;color:var(--ink-soft);}
   input[type=text], input[type=tel]{
-    width:100%;font-family:inherit;font-size:15.5px;color:var(--ink);
+    width:100%;font-size:15.5px;color:var(--ink);
     padding:12px 14px;border:1px solid var(--line);border-radius:10px;
     background:#fff;outline:none;
   }
@@ -213,11 +212,43 @@
   .zip-result .row{display:flex;justify-content:space-between;gap:8px;color:var(--ink-soft);}
   .zip-result .row b{color:var(--navy);font-weight:600;}
   .zip-result select{
-    width:100%;margin-top:6px;font-family:inherit;font-size:13.5px;
+    width:100%;margin-top:6px;font-size:13.5px;
     padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);
   }
   .zip-hint{font-size:12px;color:var(--ink-soft);margin-top:6px;}
   .zip-hint.notfound{color:var(--red);}
+
+  /* address method toggle: pin vs full address */
+  .addr-method{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .addr-method-opt{position:relative;}
+  .addr-method-opt input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0;}
+  .addr-method-opt span{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    text-align:center;font-size:13.5px;font-weight:500;
+    padding:11px 6px;border:1px solid var(--line);border-radius:10px;
+    background:#fff;color:var(--ink);
+  }
+  .addr-method-opt span svg{width:15px;height:15px;flex:none;}
+  .addr-method-opt input:checked + span{
+    border-color:var(--red);background:#FDEAEB;color:var(--red);font-weight:700;
+  }
+  .addr-detail{display:none;}
+  .addr-detail.show{display:block;}
+  .addr-detail .field{margin-bottom:10px;}
+
+  .pin-box{
+    background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;
+  }
+  .pin-btn{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--navy);color:#fff;font-weight:600;font-size:14.5px;
+    padding:12px;border:none;border-radius:10px;cursor:pointer;
+  }
+  .pin-btn svg{width:16px;height:16px;}
+  .pin-status{font-size:12.5px;color:var(--ink-soft);margin-top:10px;line-height:1.6;display:none;}
+  .pin-status.show{display:block;}
+  .pin-status a{color:var(--blue);font-weight:600;text-decoration:underline;}
+  .pin-status.error{color:var(--red);}
 
   .consent{
     display:flex;gap:10px;align-items:flex-start;
@@ -229,6 +260,7 @@
   .consent a{color:var(--blue);font-weight:600;text-decoration:underline;}
 
   .submit-btn{
+    font-family:var(--font);
     width:100%;margin-top:18px;
     background:var(--red);color:#fff;font-weight:700;font-size:16px;
     padding:15px;border:none;border-radius:999px;cursor:pointer;
@@ -258,12 +290,14 @@
   .line-card h3{margin:0 0 6px;font-size:16px;color:var(--navy);}
   .line-card p{margin:0 0 18px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;}
   .line-btn{
+    font-family:var(--font);
     display:inline-flex;align-items:center;gap:8px;
     background:#06C755;color:#fff;font-weight:700;font-size:15px;
     padding:13px 26px;border-radius:999px;text-decoration:none;
   }
 
   .back-link{
+    font-family:var(--font);
     display:inline-flex;align-items:center;gap:5px;
     font-size:13px;font-weight:600;color:var(--ink-soft);
     margin-bottom:14px;background:none;border:none;padding:0;cursor:pointer;
@@ -277,7 +311,7 @@
     display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
   }
   .success .check svg{width:28px;height:28px;}
-  .success h2{font-size:19px;color:var(--navy);margin:0 0 8px;}
+  .success h2{font-size:19px;color:var(--navy);margin:0 0 8px;text-align:left;}
   .success p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 auto 20px;max-width:340px;}
   .success .ref{
     display:inline-block;font-size:12.5px;color:var(--ink-soft);
@@ -285,6 +319,7 @@
     padding:8px 14px;border-radius:999px;margin-bottom:22px;
   }
   .success .again{
+    font-family:var(--font);
     font-size:13.5px;font-weight:600;color:var(--blue);
     background:none;border:none;cursor:pointer;text-decoration:underline;
   }
@@ -417,6 +452,53 @@
           <p class="zip-hint" id="zip-hint"></p>
         </div>
 
+        <div class="field">
+          <label>รายละเอียดที่อยู่ติดตั้ง <span class="opt">(ไม่บังคับ)</span></label>
+          <div class="addr-method">
+            <label class="addr-method-opt">
+              <input type="radio" name="addr_method" value="pin">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                ปักหมุดสถานที่ติดตั้ง
+              </span>
+            </label>
+            <label class="addr-method-opt">
+              <input type="radio" name="addr_method" value="text">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                กรอกที่อยู่เต็ม
+              </span>
+            </label>
+          </div>
+
+          <!-- ตัวเลือก: ปักหมุด GPS -->
+          <div class="addr-detail" id="addr-pin">
+            <div class="pin-box">
+              <button type="button" class="pin-btn" id="pin-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                ใช้ตำแหน่งปัจจุบัน
+              </button>
+              <p class="pin-status" id="pin-status"></p>
+            </div>
+          </div>
+
+          <!-- ตัวเลือก: กรอกที่อยู่เต็ม -->
+          <div class="addr-detail" id="addr-text">
+            <div class="field">
+              <label for="house-no">บ้านเลขที่</label>
+              <input type="text" id="house-no" name="house_no" placeholder="เช่น 99/9">
+            </div>
+            <div class="field">
+              <label for="village">หมู่บ้าน/หมู่ที่ <span class="opt">(ถ้ามี)</span></label>
+              <input type="text" id="village" name="village" placeholder="เช่น หมู่บ้านสุขใจ หมู่ 5">
+            </div>
+            <div class="field">
+              <label for="road">ถนน/ซอย <span class="opt">(ถ้ามี)</span></label>
+              <input type="text" id="road" name="road" placeholder="เช่น ถนนสุขุมวิท ซอย 21">
+            </div>
+          </div>
+        </div>
+
         <div class="consent">
           <input type="checkbox" id="pdpa" name="pdpa">
           <p>
@@ -468,7 +550,7 @@
       <div class="check">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <h2 style="color:var(--navy);text-align:left;">ส่งข้อมูลเรียบร้อย</h2>
+      <h2>ส่งข้อมูลเรียบร้อย</h2>
       <p>เจ้าหน้าที่ True จะติดต่อกลับตามช่วงเวลาที่เลือกไว้ กรุณาเปิดรับสายจากหมายเลขของบริษัท</p>
       <div class="ref">เลขที่คำขอ: <span id="ref-no">—</span></div>
       <br>
@@ -528,6 +610,7 @@
   document.getElementById('new-request').addEventListener('click', function(){
     document.getElementById('lead-form').reset();
     resetZip();
+    resetAddrMethod();
     sections.success.classList.remove('open');
     document.getElementById('choose').scrollIntoView({behavior:'smooth', block:'start'});
   });
@@ -578,7 +661,6 @@
       applyZipChoice(matches[0]);
       zipResult.classList.add('show');
     } else {
-      // หลายตำบลใช้รหัสไปรษณีย์เดียวกัน ให้ผู้ใช้เลือก
       zipSelect.style.display = 'block';
       matches.forEach(function(m, i){
         var opt = document.createElement('option');
@@ -594,6 +676,55 @@
 
   zipSelect.addEventListener('change', function(){
     if(currentZipMatches){ applyZipChoice(currentZipMatches[zipSelect.value]); }
+  });
+
+  // ---- address method: pin vs full text ----
+  var addrPinBlock = document.getElementById('addr-pin');
+  var addrTextBlock = document.getElementById('addr-text');
+  var addrMethodRadios = document.querySelectorAll('input[name="addr_method"]');
+  var pinBtn = document.getElementById('pin-btn');
+  var pinStatus = document.getElementById('pin-status');
+  var pinCoords = null; // {lat, lng}
+
+  function resetAddrMethod(){
+    addrMethodRadios.forEach(function(r){ r.checked = false; });
+    addrPinBlock.classList.remove('show');
+    addrTextBlock.classList.remove('show');
+    pinStatus.classList.remove('show','error');
+    pinStatus.textContent = '';
+    pinCoords = null;
+  }
+
+  addrMethodRadios.forEach(function(radio){
+    radio.addEventListener('change', function(){
+      addrPinBlock.classList.toggle('show', radio.value === 'pin' && radio.checked);
+      addrTextBlock.classList.toggle('show', radio.value === 'text' && radio.checked);
+    });
+  });
+
+  pinBtn.addEventListener('click', function(){
+    if(!navigator.geolocation){
+      pinStatus.textContent = 'อุปกรณ์นี้ไม่รองรับการปักหมุดตำแหน่ง กรุณาเลือก "กรอกที่อยู่เต็ม" แทน';
+      pinStatus.classList.add('show','error');
+      return;
+    }
+    pinStatus.classList.remove('error');
+    pinStatus.textContent = 'กำลังค้นหาตำแหน่ง...';
+    pinStatus.classList.add('show');
+
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        pinCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        var mapsUrl = 'https://maps.google.com/?q=' + pinCoords.lat + ',' + pinCoords.lng;
+        pinStatus.innerHTML = 'บันทึกตำแหน่งแล้ว — <a href="' + mapsUrl + '" target="_blank" rel="noopener">ดูบนแผนที่</a>';
+        pinStatus.classList.remove('error');
+      },
+      function(){
+        pinStatus.textContent = 'ไม่สามารถเข้าถึงตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่ง หรือเลือก "กรอกที่อยู่เต็ม" แทน';
+        pinStatus.classList.add('error');
+      },
+      { enableHighAccuracy:true, timeout:10000 }
+    );
   });
 
   // ---- form validation + submit ----
@@ -644,6 +775,9 @@
       zipMatch = currentZipMatches[idx];
     }
 
+    var addrMethod = form.querySelector('input[name="addr_method"]:checked');
+    addrMethod = addrMethod ? addrMethod.value : null;
+
     var payload = {
       name: document.getElementById('name').value.trim(),
       phone: document.getElementById('phone').value.trim(),
@@ -652,6 +786,12 @@
       subdistrict: zipMatch ? zipMatch[0] : null,
       district: zipMatch ? zipMatch[1] : null,
       province: zipMatch ? zipMatch[2] : null,
+      address_method: addrMethod,
+      house_no: addrMethod === 'text' ? document.getElementById('house-no').value.trim() : null,
+      village: addrMethod === 'text' ? document.getElementById('village').value.trim() : null,
+      road: addrMethod === 'text' ? document.getElementById('road').value.trim() : null,
+      pin_lat: addrMethod === 'pin' && pinCoords ? pinCoords.lat : null,
+      pin_lng: addrMethod === 'pin' && pinCoords ? pinCoords.lng : null,
       pdpa_consent: true,
       source: 'true_app_splash_banner',
       submitted_at: new Date().toISOString(),
