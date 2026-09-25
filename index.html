@@ -468,9 +468,9 @@
           <label data-i18n="label_time">ช่วงเวลาที่สะดวกให้ติดต่อกลับ</label>
           <div class="time-grid">
             <label class="time-opt"><input type="radio" name="callback_time" value="asap"><span data-i18n="opt_asap">เร็วที่สุด</span></label>
-            <label class="time-opt"><input type="radio" name="callback_time" value="morning"><span>09:00–12:00</span></label>
-            <label class="time-opt"><input type="radio" name="callback_time" value="afternoon"><span>12:00–16:00</span></label>
-            <label class="time-opt"><input type="radio" name="callback_time" value="evening"><span>16:00–20:00</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="morning"><span>10:00–12:00</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="afternoon"><span>12:00–15:00</span></label>
+            <label class="time-opt"><input type="radio" name="callback_time" value="evening"><span>15:00–18:00</span></label>
           </div>
           <p class="err" data-i18n="err_time">กรุณาเลือกช่วงเวลาที่สะดวก</p>
         </div>
@@ -551,7 +551,7 @@
 
         <div class="sla-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span data-i18n="sla_note">*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 07:00–20:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป</span>
+          <span data-i18n="sla_note">*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 10:00–18:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป</span>
         </div>
       </form>
     </div>
@@ -611,7 +611,7 @@
   // ===================== CONFIG — แก้ 2 ค่านี้ก่อนใช้งานจริง =====================
   var CONFIG = {
     // TODO: URL ของ Apps Script Web App / Cloud Run endpoint ที่รับข้อมูล lead (เก็บลง Sheet/BigQuery + ยิง LINE Notify)
-    SUBMIT_ENDPOINT: "https://script.google.com/macros/s/REPLACE_ME/exec",
+    SUBMIT_ENDPOINT: "https://tol-lead-receiver-1024308722431.asia-southeast3.run.app",
     // TODO: ลิงก์ LINE OA จริง
     LINE_OA_URL: "https://line.me/R/ti/p/@REPLACE_ME"
   };
@@ -673,7 +673,7 @@
       consent_post: " ของบริษัท",
       pdpa_err: "กรุณายอมรับนโยบายความเป็นส่วนตัวก่อนส่งข้อมูล",
       submit_label: "ส่งข้อมูล",
-      sla_note: "*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 07:00–20:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป",
+      sla_note: "*เจ้าหน้าที่ติดต่อกลับภายใน 5 นาทีในเวลาทำการ 10:00–18:00 น. นอกเวลาทำการจะติดต่อกลับในช่วงเวลาถัดไป",
       line_title: "แชทกับเจ้าหน้าที่",
       line_sub: "คุยกับเจ้าหน้าที่ True ผ่าน LINE ได้ทันที",
       line_card_p: "แตะปุ่มด้านล่างเพื่อเปิดแชท เจ้าหน้าที่ตอบกลับภายใน 5 นาทีในเวลาทำการ",
@@ -738,7 +738,7 @@
       consent_post: " of the company",
       pdpa_err: "Please accept the Privacy Policy before submitting",
       submit_label: "Submit",
-      sla_note: "*Our staff will call back within 5 minutes during service hours 07:00–20:00. Outside service hours, we'll call back during the next available window.",
+      sla_note: "*Our staff will call back within 5 minutes during service hours 10:00–18:00. Outside service hours, we'll call back during the next available window.",
       line_title: "Chat with our staff",
       line_sub: "Chat with a True representative on LINE right now",
       line_card_p: "Tap the button below to start chatting. Our staff replies within 5 minutes during service hours.",
@@ -803,7 +803,7 @@
       consent_post: "收集并使用以上信息，用于回电联系及产品推荐",
       pdpa_err: "请先同意隐私政策再提交",
       submit_label: "提交信息",
-      sla_note: "*工作时间07:00–20:00内，工作人员将在5分钟内回电；非工作时间将在下一时段回电",
+      sla_note: "*工作时间10:00–18:00内，工作人员将在5分钟内回电；非工作时间将在下一时段回电",
       line_title: "与工作人员聊天",
       line_sub: "立即通过LINE与True工作人员聊天",
       line_card_p: "点击下方按钮开始聊天，工作时间内5分钟回复",
@@ -868,7 +868,7 @@
       consent_post: "に基づき同意します",
       pdpa_err: "送信前にプライバシーポリシーへの同意が必要です",
       submit_label: "送信する",
-      sla_note: "※営業時間（7:00〜20:00）内は5分以内に折り返しご連絡いたします。営業時間外の場合は、次の対応時間帯にご連絡いたします。",
+      sla_note: "※営業時間（10:00〜18:00）内は5分以内に折り返しご連絡いたします。営業時間外の場合は、次の対応時間帯にご連絡いたします。",
       line_title: "スタッフとチャットする",
       line_sub: "TrueのスタッフとLINEで今すぐチャットできます",
       line_card_p: "下のボタンをタップしてチャットを開始してください。営業時間内は5分以内に返信いたします。",
@@ -933,7 +933,7 @@
       consent_post: " компании",
       pdpa_err: "Перед отправкой необходимо принять Политику конфиденциальности",
       submit_label: "Отправить",
-      sla_note: "*Сотрудник перезвонит в течение 5 минут в рабочее время 07:00–20:00. Вне рабочего времени звонок поступит в следующий доступный период.",
+      sla_note: "*Сотрудник перезвонит в течение 5 минут в рабочее время 10:00–18:00. Вне рабочего времени звонок поступит в следующий доступный период.",
       line_title: "Написать сотруднику",
       line_sub: "Напишите представителю True в LINE прямо сейчас",
       line_card_p: "Нажмите кнопку ниже, чтобы начать чат. В рабочее время сотрудник ответит в течение 5 минут.",
@@ -998,7 +998,7 @@
       consent_post: " အရ သဘောတူပါသည်",
       pdpa_err: "ပေးပို့မီ ကိုယ်ရေးအချက်အလက်မူဝါဒကို သဘောတူရန် လိုအပ်ပါသည်",
       submit_label: "ပေးပို့ရန်",
-      sla_note: "*ဝန်ဆောင်မှုအချိန် ၀၇:၀၀–၂၀:၀၀ အတွင်း ဝန်ထမ်းမှ ၅ မိနစ်အတွင်း ပြန်ဆက်သွယ်ပါမည်။ ဝန်ဆောင်မှုအချိန်ပြင်ပတွင် နောက်ထပ်အချိန်ပိုင်း၌ ဆက်သွယ်ပါမည်။",
+      sla_note: "*ဝန်ဆောင်မှုအချိန် ၁၀:၀၀–၁၈:၀၀ အတွင်း ဝန်ထမ်းမှ ၅ မိနစ်အတွင်း ပြန်ဆက်သွယ်ပါမည်။ ဝန်ဆောင်မှုအချိန်ပြင်ပတွင် နောက်ထပ်အချိန်ပိုင်း၌ ဆက်သွယ်ပါမည်။",
       line_title: "ဝန်ထမ်းနှင့် စကားပြောရန်",
       line_sub: "True ဝန်ထမ်းနှင့် LINE မှတစ်ဆင့် ယခုချက်ချင်းစကားပြောနိုင်ပါသည်",
       line_card_p: "စကားပြောရန် အောက်ပါခလုတ်ကို နှိပ်ပါ။ ဝန်ဆောင်မှုအချိန်အတွင်း ၅ မိနစ်ဖြင့် ပြန်ကြားပါမည်။",
